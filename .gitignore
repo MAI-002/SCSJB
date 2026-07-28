@@ -1,0 +1,18 @@
+# 依赖与构建产物
+node_modules/
+dist/
+build/
+.next/
+out/
+.cache/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.log
+
+# 直接上传方式使用的压缩包（Git 部署不需要）
+report-site.zip
+
+# 无关脚本
+server.ps1
