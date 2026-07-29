@@ -383,14 +383,29 @@
         <button class="btn-submit" id="submitBtn">提交举报</button>
     </div>
 
-    <div class="reward-info" id="rewardInfo">
+    <div class="reward-info" id="rewardInner">
         <strong>举报奖励税前标准（下列岗位是指被举报人的岗位级别）</strong><br>
-        1、普通员工级（含领班级）100-1000 元；<br>
-        2、主管级别 500-2000 元；<br>
-        3、经理级别 1000-4000 元；<br>
-        4、经理级别以上 2000-8000 元；<br>
-        5、如举报内容属实，但没有明确责任人或达不到举报奖金标准，酌情给予举报人物质或精神奖励。<br>
+        1、普通员工级（含领班级）100-1000元；<br>
+        2、主管级别500-2000元；<br>
+        3、经理级别1000-4000元；<br>
+        4、经理级别以上2000-8000元；<br>
+        5、追回涉案金额按回款 5% 计发，该类奖金上限 10000 元；<br>
+        6、举报经查证属实但无明确责任人，酌情给予物质或精神奖励；<br>
+        7、岗位档位奖金、追回比例奖金择高发放，不得重复领取。<br>
         <span style="color:var(--primary-green);font-weight:bold;">注：奖金随月度薪资一同发放。</span>
+    </div>
+
+    <div class="reward-info" id="rewardOuter">
+        <strong>举报奖励税前标准</strong><br>
+        1、奖励比例：按实际追回涉案金额的 5% 计发<br>
+        2、保底奖励：奖金不足 500 元，统一按 500 元发放<br>
+        3、最高封顶：单笔举报奖励上限 10000 元<br>
+        <br>
+        <strong>举报规则</strong><br>
+        1、订单消费类举报，需在消费当日起 30 个自然日内提交，超期无效<br>
+        2、同一员工同一违规事项，已核实结案的，后续举报均为重复举报，不予奖励<br>
+        3、所有举报需经官方核查属实，方可核算发放奖励<br>
+        4、举报属实不代表必然发放奖励，存在违规套利情形可拒发奖金
     </div>
 </div>
 
@@ -520,7 +535,8 @@ document.getElementById('innerBtn').onclick = function(){
     document.getElementById('formTitle').innerText = "内部员工举报通道";
     document.getElementById('accusedNameItem').style.display = 'block';
     document.getElementById('deptItem').style.display = 'block';
-    document.getElementById('rewardInfo').style.display = 'block';
+    document.getElementById('rewardInner').style.display = 'block';
+    document.getElementById('rewardOuter').style.display = 'none';
     document.getElementById('channelPage').style.display = 'none';
     document.getElementById('formPage').style.display = 'block';
     if(document.getElementById('anonymous').checked && !anonymousTipConfirmed){
@@ -533,7 +549,8 @@ document.getElementById('outerBtn').onclick = function(){
     document.getElementById('formTitle').innerText = "外部人员举报通道";
     document.getElementById('accusedNameItem').style.display = 'none';
     document.getElementById('deptItem').style.display = 'block';
-    document.getElementById('rewardInfo').style.display = 'none';
+    document.getElementById('rewardOuter').style.display = 'block';
+    document.getElementById('rewardInner').style.display = 'none';
     document.getElementById('channelPage').style.display = 'none';
     document.getElementById('formPage').style.display = 'block';
     if(document.getElementById('anonymous').checked && !anonymousTipConfirmed){
