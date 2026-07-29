@@ -21,13 +21,6 @@ function json(body, status) {
 }
 
 export async function onRequestPost({ request, env }) {
-  const key = env.WECHAT_ROBOT_KEY;
-  if (!key) {
-    return json({ success: false, message: '服务器未配置企业微信机器人 key（WECHAT_ROBOT_KEY）' }, 500);
-  }
-  const sendUrl = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + key;
-  const uploadBase = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=' + key + '&type=';
-
   let formData;
   try {
     formData = await request.formData();
@@ -49,8 +42,28 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  try {
-    // 1) 先发文本（markdown）
+  // 内部通道口令校验（独立分支，无需机器人 key）：
+  // 前端输入口令后先调用本接口验证；提交举报时内部通道也必须带 __innerPwd，否则拒绝转发，防止绕过前端直接调用
+  if (fields['__action'] === 'verify') {
+    const ok = (fields['__pwd'] || '') === (env.INNER_REPORT_PASSWORD || 'JUBAO');
+    return json({ success: ok, message: ok ? '' : '口令错误' });
+  }
+
+  const key = env.WECHAT_ROBOT_KEY;
+  if (!key) {
+    return json({ success: false, message: '服务器未配置企业微信机器人 key（WECHAT_ROBOT_KEY）' }, 500);
+  }
+
+  // 内部通道提交必须携带正确口令，否则拒绝转发（防绕过前端直调接口）
+  if (fields['举报通道'] === '内部员工' && (fields['__innerPwd'] || '') !== (env.INNER_REPORT_PASSWORD || 'JUBAO')) {
+    return json({ success: false, message: '内部通道口令校验失败，请重新进入通道' }, 403);
+  }
+
+  const sendUrl = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + key;
+  const uploadBase = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=' + key + '&type=';
+
+try {
+  // 1) 先发文本（markdown）
     const markdown = buildMarkdown(fields);
     const textResp = await fetch(sendUrl, {
       method: 'POST',
