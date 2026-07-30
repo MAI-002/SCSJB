@@ -176,6 +176,7 @@
         }
         .contact-input{display:none;}
         .other-type-input{margin-top:12px;display:none;}
+        .other-type-hint{display:none;margin-top:6px;font-size:12px;color:var(--danger-red);}
         .textarea:focus,.required-input:focus,.contact-input:focus,.other-type-input:focus,.select-box:focus{
             outline:none;border-color:var(--primary-green);
             box-shadow:0 0 0 3px rgba(74,122,43,0.12);
@@ -399,6 +400,7 @@
         <div class="select-box" id="typeText">请点击选择举报类型</div>
         <input type="hidden" id="typeVal">
         <input type="text" class="other-type-input" id="otherTypeInput" placeholder="请详细描述具体的舞弊行为">
+        <div class="other-type-hint" id="otherTypeHint">选择「其他舞弊行为」时，此项为必填项</div>
     </div>
 
     <div class="form-item">
@@ -495,8 +497,8 @@
             <div class="pop-title">违法行为</div>
             <div class="pop-desc">参与赌博、涉毒、涉黄等违法活动</div>
         </div>
-        <div class="pop-item" data-val="其他违反廉洁红线行为">
-            <div class="pop-title">其他违反廉洁红线行为</div>
+        <div class="pop-item" data-val="其他舞弊行为">
+            <div class="pop-title">其他舞弊行为</div>
         </div>
     </div>
 </div>
@@ -704,9 +706,8 @@ innerTypeItems.forEach(item=>{
         innerTypeItems.forEach(i=>i.classList.remove('active'));
         this.classList.add('active');
         selectedType = this.getAttribute('data-val');
-        isOtherType = selectedType === "其他违反廉洁红线行为";
-        otherTypeInput.placeholder = isOtherType ? "请详细描述违反廉洁红线的具体行为" : "请详细描述具体的舞弊行为";
-        otherTypeInput.style.display = isOtherType ? 'block' : 'none';
+        isOtherType = selectedType === "其他舞弊行为";
+        otherTypeInput.placeholder = "请详细描述具体的舞弊行为";
     }
 })
 
@@ -717,34 +718,31 @@ outerTypeItems.forEach(item=>{
         this.classList.add('active');
         selectedType = this.getAttribute('data-val');
         isOtherType = selectedType === "其他舞弊行为";
-        otherTypeInput.placeholder = isOtherType ? "请详细描述具体的舞弊行为" : "请详细描述具体的舞弊行为";
-        otherTypeInput.style.display = isOtherType ? 'block' : 'none';
+        otherTypeInput.placeholder = "请详细描述具体的舞弊行为";
     }
 })
 
 document.getElementById('innerPopSure').onclick = function(){
     if(!selectedType){alert("请选择举报类型");return;}
-    if(isOtherType && !otherTypeInput.value.trim()){
-        alert("请填写违反廉洁红线的具体行为");
-        return;
-    }
-    const innerTypeLabel = isOtherType ? `${selectedType}：${otherTypeInput.value.trim()}` : selectedType;
-    typeText.innerText = innerTypeLabel;
-    typeText.title = innerTypeLabel;
-    typeVal.value = innerTypeLabel;
+    typeText.innerText = selectedType;
+    typeText.title = selectedType;
+    typeVal.value = selectedType;
     document.getElementById('innerTypePop').style.display = 'none';
+    // 选中"其他舞弊行为"后，关闭弹窗再展开第二个输入框（必填）
+    otherTypeInput.style.display = isOtherType ? 'block' : 'none';
+    document.getElementById('otherTypeHint').style.display = isOtherType ? 'block' : 'none';
+    if(isOtherType) otherTypeInput.focus();
 }
 document.getElementById('outerPopSure').onclick = function(){
     if(!selectedType){alert("请选择举报类型");return;}
-    if(isOtherType && !otherTypeInput.value.trim()){
-        alert("请填写具体的舞弊行为");
-        return;
-    }
-    const outerTypeLabel = isOtherType ? `${selectedType}：${otherTypeInput.value.trim()}` : selectedType;
-    typeText.innerText = outerTypeLabel;
-    typeText.title = outerTypeLabel;
-    typeVal.value = outerTypeLabel;
+    typeText.innerText = selectedType;
+    typeText.title = selectedType;
+    typeVal.value = selectedType;
     document.getElementById('outerTypePop').style.display = 'none';
+    // 选中"其他舞弊行为"后，关闭弹窗再展开第二个输入框（必填）
+    otherTypeInput.style.display = isOtherType ? 'block' : 'none';
+    document.getElementById('otherTypeHint').style.display = isOtherType ? 'block' : 'none';
+    if(isOtherType) otherTypeInput.focus();
 }
 document.getElementById('innerPopClose').onclick = function(){
     document.getElementById('innerTypePop').style.display = 'none';
@@ -862,8 +860,7 @@ document.getElementById('submitBtn').onclick = async function(){
     }
     if(!typeVal.value){alert("请选择举报类型");return;}
     if(isOtherType && !otherTypeInput.value.trim()){
-        const tipText = currentChannel === "内部员工" ? "请填写违反廉洁红线的具体行为" : "请填写具体的舞弊行为";
-        alert(tipText);
+        alert("请填写具体的舞弊行为（必填）");
         return;
     }
     const content = contentInput.value.trim();
@@ -893,7 +890,7 @@ document.getElementById('submitBtn').onclick = async function(){
             '举报方式': reportMode,
             '联系方式': contact,
             '门店/部门': dept,
-            '举报类别': typeVal.value,
+            '举报类别': isOtherType ? `${selectedType}：${otherTypeInput.value.trim()}` : typeVal.value,
             '举报事由': content,
             '举报时间': new Date().toLocaleString()
         };
@@ -968,6 +965,7 @@ function resetForm(){
     isOtherType = false;
     otherTypeInput.style.display = 'none';
     otherTypeInput.value = '';
+    document.getElementById('otherTypeHint').style.display = 'none';
     contentInput.value = '';
     charNum.textContent = '0';
     imgList.innerHTML = '';
