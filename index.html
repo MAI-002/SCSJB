@@ -89,8 +89,10 @@
         .notice-box ul{padding-left:18px;margin:12px 0;}
         .notice-box li{margin:9px 0;}
         .check-box{display:flex;align-items:center;margin:22px 0 6px;}
-        .check-box input{width:18px;height:18px;margin-right:8px;accent-color:var(--primary-green);}
-        .check-box span{font-size:13.5px;color:var(--text-main);}
+        .check-box input{width:18px;height:18px;margin-right:8px;accent-color:var(--primary-green);flex-shrink:0;}
+        .check-box label{font-size:13.5px;color:var(--text-main);line-height:1.5;}
+        .privacy-link{color:var(--primary-green);text-decoration:underline;cursor:pointer;}
+        .privacy-link:hover{color:var(--primary-dark);}
         .btn-confirm{
             width:100%;height:46px;
             background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));
@@ -344,7 +346,7 @@
         <p>请仔细阅读以上规则，确认无误后勾选下方选项，进入举报页面。</p>
         <div class="check-box">
             <input type="checkbox" id="agree">
-            <label for="agree">我已了解以上事项，同意并继续举报</label>
+            <label for="agree">我已了解以上事项，同意《举报须知》及<a href="privacy.html" target="_blank" class="privacy-link" onclick="event.stopPropagation()">《举报通道隐私保护指引》</a>并继续举报。</label>
         </div>
         <button class="btn-confirm" id="nextBtn" disabled>确认举报</button>
     </div>
