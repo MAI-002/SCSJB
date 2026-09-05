@@ -374,11 +374,11 @@
         <label>举报类型</label>
         <div class="report-type">
             <div class="report-type-item">
-                <input type="radio" name="reportMode" id="realname" value="实名举报">
+                <input type="radio" name="reportMode" id="realname" value="实名举报" checked>
                 <label for="realname">实名举报 <span style="color:red">*</span></label>
             </div>
             <div class="report-type-item">
-                <input type="radio" name="reportMode" id="anonymous" value="匿名举报" checked>
+                <input type="radio" name="reportMode" id="anonymous" value="匿名举报">
                 <label for="anonymous">匿名举报</label>
             </div>
         </div>
@@ -680,6 +680,9 @@ realnameRadio.onchange = function(){
     contactInput.style.display = 'block';
     anonymousTipConfirmed = false;
 }
+// 默认选中实名举报，并展示联系方式输入框
+realnameRadio.checked = true;
+contactInput.style.display = 'block';
 
 function showAnonymousTip(){
     document.getElementById('anonymousTipMask').style.display = 'flex';
@@ -965,8 +968,8 @@ function describeSubmitError(err){
 }
 
 function resetForm(){
-    anonymousRadio.checked = true;
-    contactInput.style.display = 'none';
+    realnameRadio.checked = true;
+    contactInput.style.display = 'block';
     contactInput.value = '';
     anonymousTipConfirmed = false;
     document.getElementById('accusedName').value = '';
