@@ -2,6 +2,10 @@
 // 路由：/api/report  （与 index.html 同域，避免跨域问题）
 // 环境变量 WECHAT_ROBOT_KEY：企业微信群机器人 webhook 地址中 key= 后面的那段
 
+// 内部通道口令验证总开关：false=禁用验证（任何人可直接进入内部通道并提交），true=启用口令校验
+// 后期需要重新启用验证时，把这里改回 true 即可（前端对应开关：index.html 中的 INNER_AUTH_ENABLED）
+const INNER_AUTH_ENABLED = false;
+
 function buildMarkdown(fields) {
   const lines = ['## 收到一条新举报'];
   for (const k of Object.keys(fields)) {
@@ -54,8 +58,8 @@ export async function onRequestPost({ request, env }) {
     return json({ success: false, message: '服务器未配置企业微信机器人 key（WECHAT_ROBOT_KEY）' }, 500);
   }
 
-  // 内部通道提交必须携带正确口令，否则拒绝转发（防绕过前端直调接口）
-  if (fields['举报通道'] === '内部员工' && (fields['__innerPwd'] || '') !== (env.INNER_REPORT_PASSWORD || 'JUBAO')) {
+  // 内部通道提交口令校验（防绕过前端直调接口），总开关关闭时跳过
+  if (INNER_AUTH_ENABLED && fields['举报通道'] === '内部员工' && (fields['__innerPwd'] || '') !== (env.INNER_REPORT_PASSWORD || 'JUBAO')) {
     return json({ success: false, message: '内部通道口令校验失败，请重新进入通道' }, 403);
   }
 
