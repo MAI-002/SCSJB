@@ -4,7 +4,7 @@
 
 // 内部通道口令验证总开关：false=禁用验证（任何人可直接进入内部通道并提交），true=启用口令校验
 // 后期需要重新启用验证时，把这里改回 true 即可（前端对应开关：index.html 中的 INNER_AUTH_ENABLED）
-const INNER_AUTH_ENABLED = false;
+const INNER_AUTH_ENABLED = true;
 
 function buildMarkdown(fields) {
   const lines = ['## 收到一条新举报'];
