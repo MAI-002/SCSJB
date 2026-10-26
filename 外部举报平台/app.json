@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "外部人员举报",
+    "navigationBarBackgroundColor": "#1f2a1a",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#eef2e9"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

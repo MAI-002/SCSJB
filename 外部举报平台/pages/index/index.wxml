@@ -1,0 +1,75 @@
+<view wx:if="{{!success}}" class="page">
+  <view class="form-title">外部人员举报</view>
+
+  <view class="card">
+    <view class="label">举报方式</view>
+    <radio-group class="mode-row" bindchange="onModeChange">
+      <label class="mode-item"><radio value="实名举报" checked="{{reportMode==='实名举报'}}"/>实名举报<text class="req">*</text></label>
+      <label class="mode-item"><radio value="匿名举报" checked="{{reportMode==='匿名举报'}}"/>匿名举报</label>
+    </radio-group>
+    <input wx:if="{{showContact}}" class="input" placeholder="请填写联系方式（手机号/微信）" value="{{contact}}" bindinput="onContact"/>
+  </view>
+
+  <view class="card">
+    <view class="label">被举报员工名字</view>
+    <input class="input" placeholder="请填写被举报员工的姓名（选填）" value="{{accusedName}}" bindinput="onAccused"/>
+  </view>
+
+  <view class="card">
+    <view class="label">门店/部门 <text class="req">*</text></view>
+    <input class="input" placeholder="请填写被举报员工所属门店或部门" value="{{dept}}" bindinput="onDept"/>
+  </view>
+
+  <view class="card">
+    <view class="label">举报类型 <text class="req">*</text></view>
+    <view class="select-box" bindtap="openTypePop">{{typeText}}</view>
+    <input wx:if="{{showOtherInput}}" class="input other-input" placeholder="请详细描述具体的舞弊行为" value="{{otherType}}" bindinput="onOther"/>
+    <view wx:if="{{showOtherInput}}" class="other-hint">选择「其他」类举报类型时，此项为必填项</view>
+  </view>
+
+  <view class="card">
+    <view class="label">举报事由 <text class="req">*</text></view>
+    <textarea class="textarea" maxlength="1000" placeholder="请详细描述违规情况（时间、地点、经过等关键信息）" value="{{content}}" bindinput="onContent"/>
+    <view class="char-count">{{charNum}}/1000</view>
+  </view>
+
+  <view class="card">
+    <view class="label">上传凭证附件（最多5张，单张不超过5MB）</view>
+    <view class="img-row">
+      <view class="img-item" wx:for="{{images}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" bindtap="previewImg" data-index="{{index}}"/>
+        <view class="del-btn" bindtap="delImg" data-index="{{index}}">×</view>
+      </view>
+      <view class="upload-box" bindtap="chooseImage" wx:if="{{images.length<5}}">+ 上传</view>
+    </view>
+    <view class="upload-tip">支持聊天记录、支付凭证、现场照片等</view>
+  </view>
+
+  <view class="reward">{{rewardText}}</view>
+
+  <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">提交举报</button>
+</view>
+
+<!-- 类型选择弹窗 -->
+<view class="mask" wx:if="{{showTypePop}}" bindtap="closeTypePop">
+  <view class="bottom-pop" catchtap="noop">
+    <view class="pop-head">
+      <text bindtap="closeTypePop">取消</text>
+      <text>选择举报类型</text>
+      <text bindtap="confirmTypePop">确定</text>
+    </view>
+    <scroll-view scroll-y class="pop-list">
+      <view class="pop-item {{selectedIndex===index?'active':''}}" wx:for="{{typeList}}" wx:key="index" bindtap="onTypeTap" data-index="{{index}}">
+        <view class="pop-title">{{item.title}}</view>
+        <view class="pop-desc" wx:if="{{item.desc}}">{{item.desc}}</view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<!-- 成功页 -->
+<view wx:if="{{success}}" class="success">
+  <view class="success-title">举报提交成功！</view>
+  <view class="success-no">您的举报编号：{{reportNo}}</view>
+  <view class="success-note">感谢您的诚信与担当，您的举报信息已加密提交至公司，我们将严格保密并依法核查。请妥善保存此编号以便后续查询。</view>
+</view>

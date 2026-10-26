@@ -1,0 +1,39 @@
+page {
+  background: #eef2e9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #333;
+}
+.page { padding: 24rpx 24rpx 60rpx; }
+.form-title { font-size: 38rpx; font-weight: 700; color: #1f2a1a; text-align: center; margin: 12rpx 0 28rpx; }
+.card { background: #fff; border-radius: 20rpx; padding: 26rpx 24rpx; margin-bottom: 22rpx; box-shadow: 0 6rpx 20rpx rgba(31,42,26,.06); }
+.label { font-size: 28rpx; font-weight: 600; color: #1f2a1a; margin-bottom: 16rpx; }
+.req { color: #e03131; margin-left: 6rpx; }
+.input { width: 100%; box-sizing: border-box; border: 2rpx solid #d8e0d0; border-radius: 12rpx; padding: 18rpx 20rpx; font-size: 28rpx; background: #fafcf8; }
+.other-input { margin-top: 16rpx; }
+.other-hint { margin-top: 10rpx; font-size: 22rpx; color: #e03131; }
+.mode-row { display: flex; flex-direction: row; gap: 40rpx; margin-bottom: 18rpx; }
+.mode-item { display: flex; align-items: center; font-size: 28rpx; }
+.textarea { width: 100%; box-sizing: border-box; border: 2rpx solid #d8e0d0; border-radius: 12rpx; padding: 18rpx 20rpx; font-size: 28rpx; height: 240rpx; }
+.char-count { text-align: right; font-size: 22rpx; color: #888; margin-top: 8rpx; }
+.select-box { border: 2rpx solid #d8e0d0; border-radius: 12rpx; padding: 18rpx 20rpx; font-size: 28rpx; color: #555; background: #fafcf8; }
+.reward { font-size: 22rpx; color: #6c757d; line-height: 1.7; background: #fff; border-radius: 16rpx; padding: 22rpx 24rpx; margin-bottom: 26rpx; }
+.btn-submit { background: #4a7a2b; color: #fff; font-size: 32rpx; border-radius: 16rpx; padding: 22rpx 0; margin-top: 10rpx; }
+.img-row { display: flex; flex-wrap: wrap; gap: 18rpx; }
+.img-item { position: relative; width: 160rpx; height: 160rpx; }
+.img-item image { width: 160rpx; height: 160rpx; border-radius: 12rpx; }
+.del-btn { position: absolute; top: -10rpx; right: -10rpx; width: 40rpx; height: 40rpx; line-height: 40rpx; text-align: center; background: rgba(0,0,0,.6); color: #fff; border-radius: 50%; font-size: 28rpx; }
+.upload-box { width: 160rpx; height: 160rpx; border: 2rpx dashed #b9c4ad; border-radius: 12rpx; display: flex; align-items: center; justify-content: center; color: #7a8a6a; font-size: 28rpx; }
+.upload-tip { font-size: 22rpx; color: #888; margin-top: 10rpx; }
+.mask { position: fixed; left: 0; top: 0; right: 0; bottom: 0; background: rgba(0,0,0,.45); z-index: 100; display: flex; align-items: flex-end; }
+.bottom-pop { width: 100%; background: #fff; border-radius: 24rpx 24rpx 0 0; padding: 20rpx 0 calc(20rpx + env(safe-area-inset-bottom)); max-height: 70vh; }
+.pop-head { display: flex; justify-content: space-between; align-items: center; padding: 16rpx 30rpx; font-size: 30rpx; border-bottom: 2rpx solid #eee; }
+.pop-head text:nth-child(2) { font-weight: 600; }
+.pop-list { max-height: 56vh; padding: 10rpx 30rpx; }
+.pop-item { padding: 22rpx 0; border-bottom: 2rpx solid #f2f2f2; }
+.pop-item.active { color: #4a7a2b; }
+.pop-title { font-size: 30rpx; font-weight: 600; }
+.pop-desc { font-size: 24rpx; color: #888; margin-top: 6rpx; line-height: 1.6; }
+.success { padding: 120rpx 50rpx; text-align: center; }
+.success-title { font-size: 38rpx; font-weight: 700; color: #4a7a2b; margin-bottom: 30rpx; }
+.success-no { font-size: 30rpx; color: #333; margin-bottom: 20rpx; }
+.success-note { font-size: 24rpx; color: #888; line-height: 1.8; }
