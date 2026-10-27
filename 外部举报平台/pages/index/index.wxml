@@ -1,5 +1,5 @@
 <view wx:if="{{!success}}" class="page">
-  <view class="form-title">外部人员举报</view>
+  <view class="form-title">外部举报平台</view>
 
   <view class="card">
     <view class="label">举报方式</view>

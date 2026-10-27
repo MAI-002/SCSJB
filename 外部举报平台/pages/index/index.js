@@ -54,7 +54,7 @@ Page({
     if (m === '匿名举报' && !this.data.anonymousConfirmed) {
       wx.showModal({
         title: '重要提醒',
-        content: '本通道支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。如需核实线索、反馈结果、领取奖励，请自愿填写联系方式。',
+        content: '本平台支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励；如需核实线索、反馈处理结果、申领奖励，您可自愿填写联系方式；举报人全部隐私信息由内控监察组严格保护，仅用于本次调查处置，不会向任何无关第三方泄露。',
         confirmText: '同意匿名',
         cancelText: '返回',
         success: (r) => {
@@ -146,7 +146,7 @@ Page({
       }
       const fields = {
         '举报编号': reportNo,
-        '举报通道': '外部人员',
+        '举报平台': '外部人员',
         '举报方式': this.data.reportMode,
         '联系方式': this.data.contact.trim() || '无（匿名）',
         '门店/部门': this.data.dept.trim(),
