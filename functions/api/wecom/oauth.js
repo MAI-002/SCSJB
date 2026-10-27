@@ -51,7 +51,7 @@ export async function onRequest({ request, env }) {
     if (info.errcode === 60020) {
       const m = String(info.errmsg || '').match(/from ip:\s*([0-9.]+)/);
       const ip = m ? m[1] : '';
-      return diag(steps, 'EdgeOne 出口 IP 不在企微「企业可信IP」白名单内。请到 企微后台 → 举报平台应用 → 企业可信IP，把下面的 IP 追加进去（多个 IP 用英文逗号分隔）。出口 IP 是一个池子，补几次就稳定了。',
+      return diag(steps, 'EdgeOne 出口 IP 不在企微「企业可信IP」白名单内。请到 企微后台 → 举报平台应用 → 企业可信IP，把下面高亮的 IP 追加进去（多个 IP 用英文分号 ; 分隔）。出口 IP 是一个池子，补几次就稳定了。',
         ip || '（见下方 errmsg 中的 from ip）');
     }
     return diag(steps, '用 code 换身份失败。常见原因：① Secret 与发起授权的应用不是同一个（errcode 40029/41001）；② code 已被使用或已过期（刷新重试即可）；③ 该员工不在应用「可见范围」内。');
