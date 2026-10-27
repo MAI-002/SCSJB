@@ -41,21 +41,26 @@ export async function onRequest({ request, env }) {
   try {
     const infoRes = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=${token}&code=${code}`);
     info = await infoRes.json();
-    steps.push(['getuserinfo', JSON.stringify({ errcode: info.errcode || 0, errmsg: info.errmsg || 'ok', userid: info.userid || '' })]);
+    steps.push(['getuserinfo 完整返回', JSON.stringify(info)]);
   } catch (e) {
     return diag(steps, 'getuserinfo 网络异常：' + e.message);
   }
 
-  const userid = info.userid || info.openid || '';
-  if (!userid) {
-    if (info.errcode === 60020) {
-      const m = String(info.errmsg || '').match(/from ip:\s*([0-9.]+)/);
-      const ip = m ? m[1] : '';
-      return diag(steps, 'EdgeOne 出口 IP 不在企微「企业可信IP」白名单内。请到 企微后台 → 举报平台应用 → 企业可信IP，把下面高亮的 IP 追加进去（多个 IP 用英文分号 ; 分隔）。出口 IP 是一个池子，补几次就稳定了。',
-        ip || '（见下方 errmsg 中的 from ip）');
-    }
-    return diag(steps, '用 code 换身份失败。常见原因：① Secret 与发起授权的应用不是同一个（errcode 40029/41001）；② code 已被使用或已过期（刷新重试即可）；③ 该员工不在应用「可见范围」内。');
+  if (info.errcode === 60020) {
+    const m = String(info.errmsg || '').match(/from ip:\s*([0-9.]+)/);
+    const ip = m ? m[1] : '';
+    return diag(steps, 'EdgeOne 出口 IP 不在企微「企业可信IP」白名单内。请到 企微后台 → 举报平台应用 → 企业可信IP，把下面高亮的 IP 追加进去（多个 IP 用英文分号 ; 分隔）。出口 IP 是一个池子，补几次就稳定了。',
+      ip || '（见下方 errmsg 中的 from ip）');
   }
+
+  if (!info.userid) {
+    if (info.openid) {
+      return diag(steps, '返回的是微信 openid 而不是员工 userid：你很可能是在「个人微信」里打开的本页。内部通道必须在「企业微信」App 内打开（工作台入口或会话中的链接），个人微信里拿不到员工身份。');
+    }
+    return diag(steps, '企微接口调用成功但未返回成员身份。请确认：① 是在「企业微信」App 内打开本页（不是个人微信、不是普通浏览器）；② 该员工在应用「可见范围」内；③ 回到首页重新点「确认举报」获取新 code 再试。');
+  }
+
+  const userid = info.userid;
 
   let name = '';
   if (info.userid) {
