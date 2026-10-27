@@ -330,6 +330,14 @@
         .channel-sub{ font-size:14px; color:var(--text-muted); margin-bottom:22px; text-align:center; padding:0 24px; line-height:1.7; }
         .channel-note{ font-size:12.5px; color:var(--text-muted); margin-top:18px; text-align:center; }
         .identity-badge{ font-size:13px; color:var(--primary-green); background:rgba(74,122,43,.08); border:1px solid rgba(74,122,43,.25); border-radius:8px; padding:8px 12px; margin:0 0 18px; text-align:center; }
+        .accused-item{ background:var(--primary-soft); border:1px solid var(--border); border-radius:12px; padding:14px 14px 16px; margin-bottom:12px; }
+        .accused-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+        .accused-tag{ font-size:13.5px; font-weight:600; color:var(--primary-dark); }
+        .accused-del{ width:32px; height:32px; border:none; background:transparent; cursor:pointer; color:#b04a3e; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; }
+        .accused-del:hover{ background:rgba(217,72,59,.08); }
+        .accused-del svg{ width:17px; height:17px; }
+        .add-accused{ width:100%; height:44px; border:1px dashed var(--primary-green); background:#fff; color:var(--primary-green); border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; transition:.2s; }
+        .add-accused:hover{ background:var(--primary-light); }
     </style>
 </head>
 <body>
@@ -366,12 +374,6 @@
     </div>
 </div>
 
-<div class="channel-wrap" id="channelPage">
-    <div class="channel-title">选择举报通道</div>
-    <div class="channel-btn" id="innerBtn">内部员工举报通道</div>
-    <div class="channel-note">外部人员举报请使用微信小程序「外部举报平台」</div>
-</div>
-
 <div class="form-wrap" id="formPage">
     <div class="form-title" id="formTitle">监督举报</div>
     <div class="form-item">
@@ -386,17 +388,14 @@
                 <label for="anonymous">匿名举报</label>
             </div>
         </div>
-        <input type="text" class="contact-input" id="contact" placeholder="请填写您的联系方式（手机号/微信）">
+        <input type="text" class="contact-input" id="reporterName" placeholder="请填写您的姓名（实名举报必填）">
+        <input type="text" class="contact-input" id="contact" placeholder="请填写您的联系方式（手机号/微信）" style="margin-top:12px;">
     </div>
 
-    <div class="form-item" id="accusedNameItem">
-        <label>被举报员工名字 <span style="color:red">*</span></label>
-        <input type="text" class="required-input" id="accusedName" placeholder="请填写被举报员工的姓名">
-    </div>
-
-    <div class="form-item" id="deptItem">
-        <label>门店/部门 <span style="color:red">*</span></label>
-        <input type="text" class="required-input" id="dept" placeholder="请填写被举报员工所属门店或部门">
+    <div class="form-item">
+        <label>被举报人信息 <span style="color:red">*</span></label>
+        <div id="accusedList"></div>
+        <button type="button" class="add-accused" id="addAccusedBtn">＋ 增加举报人</button>
     </div>
 
     <div class="form-item">
@@ -419,7 +418,7 @@
             <div>点击上传图片/截图凭证</div>
             <input type="file" id="file" accept="image/*" multiple>
         </label>
-        <div class="upload-tip">支持聊天记录、支付凭证、现场照片等，提交时将自动压缩图片以保证发送成功</div>
+        <div class="upload-tip">支持聊天记录、支付凭证、现场照片等</div>
         <div class="img-preview" id="imgList"></div>
     </div>
 
@@ -587,28 +586,14 @@ agree.onchange = function(){
 }
 nextBtn.onclick = function(){
     document.getElementById('mask').style.display = 'none';
-    document.getElementById('channelPage').style.display = 'block';
-}
-
-document.getElementById('innerBtn').onclick = function(){
-    if(INNER_AUTH_ENABLED && !innerUnlocked){
-        pwdMask.style.display = 'flex';
-        pwdInput.value = '';
-        pwdErr.textContent = '';
-        setTimeout(() => pwdInput.focus(), 50);
-        return;
-    }
     enterInnerForm();
 }
 
 function enterInnerForm(){
     currentChannel = "内部员工";
     document.getElementById('formTitle').innerText = "内部员工举报平台";
-    document.getElementById('accusedNameItem').style.display = 'block';
-    document.getElementById('deptItem').style.display = 'block';
     document.getElementById('rewardInner').style.display = 'block';
     document.getElementById('rewardOuter').style.display = 'none';
-    document.getElementById('channelPage').style.display = 'none';
     document.getElementById('formPage').style.display = 'block';
     if(document.getElementById('anonymous').checked && !anonymousTipConfirmed){
         showAnonymousTip();
@@ -654,26 +639,31 @@ document.getElementById('backBtn').onclick = function(){
     if(confirm('确定要取消举报吗？已填写的内容将丢失')){
         resetForm();
         document.getElementById('formPage').style.display = 'none';
-        document.getElementById('channelPage').style.display = 'block';
+        document.getElementById('mask').style.display = 'flex';
     }
 }
 
 const anonymousRadio = document.getElementById('anonymous');
 const realnameRadio = document.getElementById('realname');
 const contactInput = document.getElementById('contact');
+const reporterNameInput = document.getElementById('reporterName');
+function setRealnameInputs(show){
+    reporterNameInput.style.display = show ? 'block' : 'none';
+    contactInput.style.display = show ? 'block' : 'none';
+}
 anonymousRadio.onchange = function(){
-    contactInput.style.display = 'none';
+    setRealnameInputs(false);
     if(!anonymousTipConfirmed){
         showAnonymousTip();
     }
 }
 realnameRadio.onchange = function(){
-    contactInput.style.display = 'block';
+    setRealnameInputs(true);
     anonymousTipConfirmed = false;
 }
-// 默认选中实名举报，并展示联系方式输入框
+// 默认选中实名举报，并展示举报人姓名与联系方式输入框
 realnameRadio.checked = true;
-contactInput.style.display = 'block';
+setRealnameInputs(true);
 
 function showAnonymousTip(){
     document.getElementById('anonymousTipMask').style.display = 'flex';
@@ -693,6 +683,38 @@ document.getElementById('anonymousConfirmBtn').onclick = function(){
     anonymousTipConfirmed = true;
     document.getElementById('anonymousTipMask').style.display = 'none';
 }
+
+// 被举报人列表：支持添加多个（姓名+门店/部门），图标按钮删除，至少保留一个
+const accusedList = document.getElementById('accusedList');
+const TRASH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+function renderAccused(){
+    const boxes = accusedList.querySelectorAll('.accused-item');
+    boxes.forEach((box, i) => {
+        box.querySelector('.accused-tag').textContent = '被举报人' + (i + 1);
+        box.querySelector('.accused-del').style.visibility = boxes.length > 1 ? 'visible' : 'hidden';
+    });
+}
+function addAccusedBox(){
+    const div = document.createElement('div');
+    div.className = 'accused-item';
+    div.innerHTML = '<div class="accused-head"><span class="accused-tag"></span>'
+        + '<button type="button" class="accused-del" title="删除该被举报人">' + TRASH_SVG + '</button></div>'
+        + '<input type="text" class="required-input accused-name" placeholder="请填写被举报员工的姓名">'
+        + '<input type="text" class="required-input accused-dept" placeholder="请填写被举报员工所属门店或部门" style="margin-top:10px;">';
+    div.querySelector('.accused-del').onclick = function(){
+        div.remove();
+        renderAccused();
+    };
+    accusedList.appendChild(div);
+}
+document.getElementById('addAccusedBtn').onclick = function(){
+    addAccusedBox();
+    renderAccused();
+    const boxes = accusedList.querySelectorAll('.accused-item');
+    boxes[boxes.length - 1].querySelector('.accused-name').focus();
+};
+addAccusedBox();
+renderAccused();
 
 const typeText = document.getElementById('typeText');
 const typeVal = document.getElementById('typeVal');
@@ -851,17 +873,12 @@ document.getElementById('submitBtn').onclick = async function(){
         showAnonymousTip();
         return;
     }
-    if(currentChannel === "内部员工"){
-        const accusedName = document.getElementById('accusedName').value.trim();
-        if(!accusedName){
-            alert("请填写被举报员工名字");
-            return;
-        }
-    }
-    const dept = document.getElementById('dept').value.trim();
-    if(!dept){
-        alert("请填写被举报员工所属门店/部门");
-        return;
+    const accusedBoxes = Array.from(document.querySelectorAll('#accusedList .accused-item'));
+    for(let i = 0; i < accusedBoxes.length; i++){
+        const n = accusedBoxes[i].querySelector('.accused-name').value.trim();
+        const d = accusedBoxes[i].querySelector('.accused-dept').value.trim();
+        if(!n){ alert("请填写被举报人" + (i+1) + "的姓名"); return; }
+        if(!d){ alert("请填写被举报人" + (i+1) + "所属门店/部门"); return; }
     }
     if(!typeVal.value){alert("请选择举报类型");return;}
     if(isOtherType && !otherTypeInput.value.trim()){
@@ -872,6 +889,10 @@ document.getElementById('submitBtn').onclick = async function(){
     const content = contentInput.value.trim();
     if(!content){alert("请填写举报事由");return;}
 
+    if(realnameRadio.checked && !reporterNameInput.value.trim()){
+        alert("实名举报必须填写举报人姓名");
+        return;
+    }
     if(realnameRadio.checked && !contactInput.value.trim()){
         alert("实名举报必须填写联系方式（手机号/微信）");
         return;
@@ -890,20 +911,22 @@ document.getElementById('submitBtn').onclick = async function(){
             ? await Promise.all(uploadedImages.map(i => compressImage(i.file)))
             : [];
 
+        const accusedText = accusedBoxes.map((box, i) => {
+            const n = box.querySelector('.accused-name').value.trim();
+            const d = box.querySelector('.accused-dept').value.trim();
+            return (i + 1) + '. ' + n + '（' + d + '）';
+        }).join('；');
         const fields = {
             '举报编号': reportNo,
             '举报通道': currentChannel,
             '举报方式': reportMode,
+            '举报人': realnameRadio.checked ? reporterNameInput.value.trim() : '匿名',
             '联系方式': contact,
-            '门店/部门': dept,
+            '被举报人': accusedText,
             '举报类别': isOtherType ? `${selectedType}：${otherTypeInput.value.trim()}` : typeVal.value,
             '举报事由': content,
             '举报时间': new Date().toLocaleString()
         };
-        if(currentChannel === "内部员工"){
-            fields['被举报员工名字'] = document.getElementById('accusedName').value.trim();
-            fields['__innerPwd'] = sessionStorage.getItem('innerPwd') || '';
-        }
 
         const res = await postViaForm(fields, compressed);
         if (res && res.fileDetails && res.fileDetails.some(d => d !== 'ok')) {
@@ -913,7 +936,6 @@ document.getElementById('submitBtn').onclick = async function(){
         document.getElementById('reportNo').textContent = reportNo;
         resetForm();
         document.getElementById('formPage').style.display = 'none';
-        document.getElementById('channelPage').style.display = 'none';
         document.getElementById('successPage').style.display = 'block';
     } catch(err){
         alert(describeSubmitError(err));
@@ -963,8 +985,11 @@ function resetForm(){
     contactInput.style.display = 'block';
     contactInput.value = '';
     anonymousTipConfirmed = false;
-    document.getElementById('accusedName').value = '';
-    document.getElementById('dept').value = '';
+    reporterNameInput.value = '';
+    contactInput.value = '';
+    accusedList.innerHTML = '';
+    addAccusedBox();
+    renderAccused();
     typeText.innerText = '请点击选择举报类型';
     typeVal.value = '';
     selectedType = "";
