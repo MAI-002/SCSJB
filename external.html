@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>三出山外部举报平台</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html,body{height:100%;}
+
+        :root {
+            --primary-green: #4a7a2b;
+            --primary-dark: #365c1f;
+            --primary-light: #eef4e3;
+            --primary-soft: #f5f9ee;
+            --danger-red: #d9483b;
+            --text-strong: #1f2a1a;
+            --text-main: #3a4233;
+            --text-muted: #8a927f;
+            --border: #e4e8dd;
+            --bg: #eef1e8;
+            --shadow-sm: 0 2px 10px rgba(54,92,31,0.06);
+            --shadow-md: 0 8px 24px rgba(54,92,31,0.10);
+            --shadow-lg: 0 18px 50px rgba(54,92,31,0.16);
+            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+        }
+
+        body{
+            font-family: var(--font);
+            background:
+                radial-gradient(1200px 600px at 50% -12%, #f5f9ed 0%, rgba(245,249,237,0) 60%),
+                var(--bg);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+            min-height:100vh;
+        }
+
+        .mask{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(31,42,26,0.45);
+            backdrop-filter:blur(2px);
+            display:flex;align-items:center;justify-content:center;z-index:99;
+            padding:20px;
+        }
+        .notice-box{
+            width:100%;max-width:440px;background:#fff;
+            border-radius:18px;padding:30px 26px;
+            max-height:86vh;overflow-y:auto;
+            box-shadow:var(--shadow-lg);
+            border:1px solid var(--border);
+        }
+        .notice-box h3{
+            text-align:center;margin-bottom:18px;
+            color:var(--primary-dark);
+            font-size:20px;font-weight:700;letter-spacing:1px;
+        }
+        .notice-box p,.notice-box li{
+            font-size:13.5px;line-height:1.85;color:var(--text-main);margin:7px 0;
+        }
+        .notice-box ul{padding-left:18px;margin:12px 0;}
+        .notice-box li{margin:9px 0;}
+        .check-box{display:flex;align-items:center;margin:22px 0 6px;}
+        .check-box input{width:18px;height:18px;margin-right:8px;accent-color:var(--primary-green);flex-shrink:0;}
+        .check-box label{font-size:13.5px;color:var(--text-main);line-height:1.5;}
+        .privacy-link{color:var(--primary-green);text-decoration:underline;cursor:pointer;}
+        .privacy-link:hover{color:var(--primary-dark);}
+        .btn-confirm{
+            width:100%;height:46px;
+            background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));
+            color:#fff;border:none;border-radius:12px;
+            font-size:16px;font-weight:600;letter-spacing:1px;
+            cursor:pointer;transition:.25s;
+            box-shadow:0 6px 16px rgba(74,122,43,0.28);
+        }
+        .btn-confirm:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(74,122,43,0.34);}
+        .btn-confirm:disabled{background:#cdd3c4;box-shadow:none;cursor:not-allowed;}
+
+        .form-wrap{
+            display:none;
+            max-width:480px;margin:0 auto;
+            padding:30px 20px 60px;
+        }
+        .form-title{
+            text-align:center;font-size:20px;font-weight:700;
+            margin-bottom:28px;color:var(--text-strong);letter-spacing:1px;
+            position:relative;padding-bottom:13px;
+        }
+        .form-title::after{
+            content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+            width:42px;height:3px;border-radius:3px;
+            background:linear-gradient(90deg,var(--primary-green),var(--primary-dark));
+        }
+        .form-item{margin-bottom:22px;}
+        .form-item label{display:block;font-size:13.5px;margin-bottom:9px;color:var(--text-main);font-weight:500;}
+        .select-box{
+            width:100%;height:46px;border:1px solid var(--border);
+            border-radius:12px;padding:0 14px;line-height:46px;
+            background:#fff;cursor:pointer;color:var(--text-muted);
+            font-size:14px;transition:.2s;
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+        }
+        .select-box:hover{border-color:var(--primary-green);}
+        .textarea{
+            width:100%;height:112px;border:1px solid var(--border);
+            border-radius:12px;padding:13px 14px;resize:none;font-size:14px;
+            color:var(--text-main);transition:.2s;font-family:var(--font);background:#fff;
+        }
+        .contact-input,.required-input,.other-type-input{
+            width:100%;height:46px;border:1px solid var(--border);
+            border-radius:12px;padding:0 14px;font-size:14px;
+            color:var(--text-main);transition:.2s;background:#fff;font-family:var(--font);
+        }
+        .contact-input{display:none;}
+        .other-type-input{margin-top:12px;display:none;}
+        .other-type-hint{display:none;margin-top:6px;font-size:12px;color:var(--danger-red);}
+        .textarea:focus,.required-input:focus,.contact-input:focus,.other-type-input:focus,.select-box:focus{
+            outline:none;border-color:var(--primary-green);
+            box-shadow:0 0 0 3px rgba(74,122,43,0.12);
+        }
+        .upload-box{
+            border:1.5px dashed var(--primary-green);
+            border-radius:12px;padding:26px;text-align:center;cursor:pointer;
+            color:var(--primary-dark);background:var(--primary-soft);
+            transition:.2s;font-size:14px;font-weight:500;
+        }
+        .upload-box:hover{background:var(--primary-light);border-color:var(--primary-dark);}
+        .upload-box input{display:none;}
+        .upload-tip{font-size:12px;color:var(--text-muted);margin-top:9px;line-height:1.6;}
+        .btn-row{display:flex;gap:14px;margin-top:34px;}
+        .btn-cancel{
+            flex:1;height:46px;border:1px solid var(--border);
+            background:#fff;border-radius:12px;font-size:15px;
+            color:var(--text-main);cursor:pointer;transition:.2s;font-weight:500;
+        }
+        .btn-cancel:hover{background:#f3f5ef;}
+        .btn-submit{
+            flex:1;height:46px;
+            background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));
+            color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;
+            cursor:pointer;transition:.25s;letter-spacing:1px;
+            box-shadow:0 6px 16px rgba(74,122,43,0.26);
+        }
+        .btn-submit:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(74,122,43,0.32);}
+        .btn-submit:disabled{background:#cdd3c4;box-shadow:none;cursor:not-allowed;}
+        .char-count{text-align:right;font-size:12px;color:var(--text-muted);margin-top:6px;}
+
+        .report-type{display:flex;gap:18px;margin-bottom:14px;}
+        .report-type-item{display:flex;align-items:center;}
+        .report-type-item input{width:18px;height:18px;margin-right:8px;accent-color:var(--primary-green);}
+        .report-type-item label{margin-bottom:0;font-weight:500;}
+
+        .bottom-pop{
+            position:fixed;left:50%;bottom:0;width:100%;
+            max-width:560px;transform:translateX(-50%);
+            background:#fff;border-radius:18px 18px 0 0;
+            display:none;z-index:99;
+            box-shadow:0 -8px 32px rgba(31,42,26,0.20);
+            padding-bottom:env(safe-area-inset-bottom);
+            animation:slideUp .28s ease;
+        }
+        @keyframes slideUp{from{transform:translate(-50%,100%);}to{transform:translate(-50%,0);}}
+        .pop-head{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:16px 18px;border-bottom:1px solid var(--border);font-size:15px;
+        }
+        .pop-head span:nth-child(1),.pop-head span:nth-child(3){
+            color:var(--primary-green);font-weight:600;cursor:pointer;padding:4px 6px;
+        }
+        .pop-head span:nth-child(2){color:var(--text-strong);font-weight:600;}
+        .pop-list{max-height:62vh;overflow-y:auto;padding:6px 0;}
+        .pop-item{
+            padding:15px 18px;border-bottom:1px solid var(--border);
+            cursor:pointer;display:flex;flex-direction:column;gap:5px;
+            transition:.18s;position:relative;
+        }
+        .pop-item:hover{background:var(--primary-soft);}
+        .pop-title{font-size:15px;color:var(--text-strong);font-weight:600;line-height:1.45;}
+        .pop-desc{font-size:12.5px;color:var(--text-muted);line-height:1.65;}
+        .pop-item.active{background:var(--primary-light);}
+        .pop-item.active .pop-title{color:var(--primary-dark);}
+        .pop-item.active .pop-desc{color:var(--primary-green);}
+        .pop-item.active::before{
+            content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+            background:var(--primary-green);border-radius:0 3px 3px 0;
+        }
+        .img-preview{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;}
+        .img-preview .img-item{width:78px;height:78px;position:relative;border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);}
+        .img-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+        .img-preview .del-btn{position:absolute;top:3px;right:3px;background:rgba(31,42,26,0.6);color:#fff;width:18px;height:18px;border-radius:50%;font-size:13px;text-align:center;line-height:18px;cursor:pointer;display:none;}
+        .img-preview .img-item:hover .del-btn{display:block;}
+
+        .anonymous-tip-mask{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(31,42,26,0.45);backdrop-filter:blur(2px);
+            display:none;align-items:center;justify-content:center;z-index:100;
+            padding:20px;
+        }
+        .anonymous-tip-box{
+            width:100%;max-width:400px;background:#fff;
+            border-radius:18px;padding:26px 24px;
+            box-shadow:var(--shadow-lg);border:1px solid var(--border);
+            animation:popIn .25s ease;
+        }
+        @keyframes popIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+        .anonymous-tip-box h4{color:var(--primary-dark);margin-bottom:14px;font-size:17px;font-weight:700;}
+        .anonymous-tip-box p{font-size:13.5px;line-height:1.85;color:var(--text-main);margin:8px 0;}
+        .anonymous-check{display:flex;align-items:center;margin:20px 0;}
+        .anonymous-check input{width:18px;height:18px;margin-right:8px;accent-color:var(--primary-green);}
+        .anonymous-check span{font-size:13.5px;color:var(--text-main);}
+        .anonymous-btn-row{display:flex;gap:12px;}
+        .anonymous-btn-cancel{flex:1;height:42px;border:1px solid var(--border);background:#fff;border-radius:12px;font-size:14px;color:var(--text-main);cursor:pointer;transition:.2s;font-weight:500;}
+        .anonymous-btn-cancel:hover{background:#f3f5ef;}
+        .anonymous-btn-confirm{flex:1;height:42px;background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:.25s;}
+        .anonymous-btn-confirm:disabled{background:#cdd3c4;cursor:not-allowed;}
+
+        .reward-info{
+            margin-top:28px;padding:16px 18px;
+            background:linear-gradient(135deg,#fbfdf5,#f1f8e8);
+            border-left:4px solid var(--primary-green);
+            border-radius:12px;font-size:13px;line-height:1.85;
+            color:var(--text-main);display:none;
+            box-shadow:var(--shadow-sm);
+        }
+        .reward-info strong{
+            color:var(--primary-dark);
+            font-size:14px;
+        }
+
+        .success-page{
+            display:none;
+            padding:72px 24px;
+            text-align:center;
+            min-height:100vh;
+            background:
+                radial-gradient(800px 400px at 50% 0%, #f5f9ed 0%, rgba(245,249,237,0) 70%),
+                #fff;
+        }
+        .success-page::before{
+            content:"✓";
+            display:block;width:64px;height:64px;line-height:64px;
+            margin:0 auto 26px;border-radius:50%;
+            background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));
+            color:#fff;font-size:32px;font-weight:bold;
+            box-shadow:0 10px 24px rgba(74,122,43,0.32);
+        }
+        .success-page h2{
+            color:var(--primary-dark);
+            margin-bottom:22px;font-size:24px;font-weight:700;letter-spacing:1px;
+            position:relative;display:inline-block;padding-bottom:14px;
+        }
+        .success-page h2::after{
+            content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+            width:48px;height:3px;border-radius:3px;
+            background:linear-gradient(90deg,var(--primary-green),var(--primary-dark));
+        }
+        .success-page p{
+            font-size:15px;line-height:2;color:var(--text-main);
+            margin-bottom:12px;max-width:420px;margin-left:auto;margin-right:auto;
+        }
+        .success-page .note{
+            margin-top:28px;color:var(--text-muted);
+            font-size:13.5px;line-height:1.9;
+        }
+
+        .accused-item{ background:var(--primary-soft); border:1px solid var(--border); border-radius:12px; padding:14px 14px 16px; margin-bottom:12px; }
+        .accused-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+        .accused-tag{ font-size:13.5px; font-weight:600; color:var(--primary-dark); }
+        .accused-del{ width:32px; height:32px; border:none; background:transparent; cursor:pointer; color:#b04a3e; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:0; }
+        .accused-del:hover{ background:rgba(217,72,59,.08); }
+        .accused-del svg{ width:17px; height:17px; }
+        .add-accused{ width:100%; height:44px; border:1px dashed var(--primary-green); background:#fff; color:var(--primary-green); border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; transition:.2s; }
+        .add-accused:hover{ background:var(--primary-light); }
+    </style>
+</head>
+<body>
+
+<div class="mask" id="mask">
+    <div class="notice-box">
+        <h3>举报须知</h3>
+        <p style="text-indent:2em;">内控监察组负责受理、管理、处理全集团投诉举报事项。为规范违规行为监督、防范经营风险，维护公司合法权益，同时保障员工正当权益，现开通违规行为监督举报平台，请您务必遵守以下规则：</p>
+        <ul>
+            <li>举报内容需真实、客观，严禁恶意诬告、虚假举报，违者将承担相应法律责任</li>
+            <li>本平台支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励</li>
+            <li>如需核实线索、反馈处理结果、申领奖励，您可自愿填写联系方式；举报人全部隐私信息由内控监察组严格保护，仅用于本次调查处置，不会向任何无关第三方泄露</li>
+            <li>请提供完整的举报事由及相关凭证，以便内控监察组快速核实处理</li>
+            <li>举报核实后，符合条件的举报人可获得现金奖励（具体以审核结果为准）</li>
+        </ul>
+        <p>请仔细阅读以上规则，确认无误后勾选下方选项，进入举报页面。</p>
+        <div class="check-box">
+            <input type="checkbox" id="agree">
+            <label for="agree">我已了解以上事项，同意《举报须知》及<a href="privacy.html" target="_blank" class="privacy-link" onclick="event.stopPropagation()">《举报平台隐私保护指引》</a>并继续举报。</label>
+        </div>
+        <button class="btn-confirm" id="nextBtn" disabled>确认举报</button>
+    </div>
+</div>
+
+<div class="form-wrap" id="formPage">
+    <div class="form-title" id="formTitle">外部举报平台</div>
+    <div class="form-item">
+        <label>举报方式</label>
+        <div class="report-type">
+            <div class="report-type-item">
+                <input type="radio" name="reportMode" id="realname" value="实名举报" checked>
+                <label for="realname">实名举报 <span style="color:red">*</span></label>
+            </div>
+            <div class="report-type-item">
+                <input type="radio" name="reportMode" id="anonymous" value="匿名举报">
+                <label for="anonymous">匿名举报</label>
+            </div>
+        </div>
+        <input type="text" class="contact-input" id="reporterName" placeholder="请填写您的姓名（实名举报必填）">
+        <input type="text" class="contact-input" id="contact" placeholder="请填写您的联系方式（手机号/微信）" style="margin-top:12px;">
+    </div>
+
+    <div class="form-item">
+        <label>被举报人信息 <span style="color:red">*</span></label>
+        <div id="accusedList"></div>
+        <button type="button" class="add-accused" id="addAccusedBtn">＋ 增加举报人</button>
+    </div>
+
+    <div class="form-item">
+        <label>举报类型 <span style="color:red">*</span></label>
+        <div class="select-box" id="typeText">请点击选择举报类型</div>
+        <input type="hidden" id="typeVal">
+        <input type="text" class="other-type-input" id="otherTypeInput" placeholder="请详细描述具体的舞弊行为">
+        <div class="other-type-hint" id="otherTypeHint">选择「其他」类举报类型时，此项为必填项</div>
+    </div>
+
+    <div class="form-item">
+        <label>举报事由 <span style="color:red">*</span></label>
+        <textarea class="textarea" id="content" placeholder="请详细描述违规情况（时间、地点、经过等关键信息）" maxlength="1000"></textarea>
+        <div class="char-count"><span id="charNum">0</span>/1000</div>
+    </div>
+
+    <div class="form-item">
+        <label>上传凭证附件（最多5张，单张不超过5MB）</label>
+        <label class="upload-box">
+            <div>点击上传图片/截图凭证</div>
+            <input type="file" id="file" accept="image/*" multiple>
+        </label>
+        <div class="upload-tip">支持聊天记录、支付凭证、现场照片等</div>
+        <div class="img-preview" id="imgList"></div>
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-cancel" id="backBtn">返回</button>
+        <button class="btn-submit" id="submitBtn">提交举报</button>
+    </div>
+
+    <div class="reward-info" id="rewardOuter">
+        <strong>举报奖励税前标准</strong><br>
+        1、奖励比例：按实际追回涉案金额的 5% 计发<br>
+        2、保底奖励：奖金不足 500 元，统一按 500 元发放<br>
+        3、最高封顶：单笔举报奖励上限 10000 元<br>
+        <br>
+        <strong>举报规则</strong><br>
+        1、订单消费类举报，需在消费当日起 30 个自然日内提交，超期无效<br>
+        2、同一员工同一违规事项，已核实结案的，后续举报均为重复举报，不予奖励<br>
+        3、所有举报需经官方核查属实，方可核算发放奖励<br>
+        4、举报属实不代表必然发放奖励，存在违规套利情形可拒发奖金
+    </div>
+</div>
+
+<div class="success-page" id="successPage">
+    <h2>举报提交成功！</h2>
+    <p>感谢您的诚信与担当，您的举报信息已加密提交至公司，我们将严格保密并依法核查。</p>
+    <p>您的举报编号：<strong id="reportNo" style="color:var(--primary-green);font-size:20px;letter-spacing:1px;"></strong></p>
+    <p style="font-size:13px;color:#888;">请妥善保存此编号，以便后续查询处理进度（实名举报可凭编号向公司核实进度）。</p>
+    <div class="note">
+        注：匿名举报无法联系、无法反馈结果，视为自动放弃举报奖励。<br>
+        感谢您的支持！
+    </div>
+</div>
+
+<div class="bottom-pop" id="outerTypePop">
+    <div class="pop-head">
+        <span id="outerPopClose">取消</span>
+        <span>选择举报类型</span>
+        <span id="outerPopSure">确定</span>
+    </div>
+    <div class="pop-list">
+        <div class="pop-item" data-val="员工私下用个人账号收款">
+            <div class="pop-title">员工私下用个人账号收款</div>
+        </div>
+        <div class="pop-item" data-val="员工索要或收受礼品、红包、回扣、好处费、宴请、借款等利益输送">
+            <div class="pop-title">员工索要或收受利益输送</div>
+            <div class="pop-desc">礼品、红包、回扣、好处费、宴请、借款等</div>
+        </div>
+        <div class="pop-item" data-val="员工泄露公司商业机密">
+            <div class="pop-title">员工泄露公司商业机密</div>
+        </div>
+        <div class="pop-item" data-val="员工与供应商或合作方串通舞弊">
+            <div class="pop-title">员工与供应商或合作方串通舞弊</div>
+        </div>
+        <div class="pop-item" data-val="贪污贿赂与职务侵占">
+            <div class="pop-title">贪污贿赂与职务侵占</div>
+        </div>
+        <div class="pop-item" data-val="串通虚报结算、虚开发票、套取公司资金">
+            <div class="pop-title">串通虚报结算、虚开发票、套取公司资金</div>
+        </div>
+        <div class="pop-item" data-val="其他舞弊行为">
+            <div class="pop-title">其他舞弊行为</div>
+        </div>
+    </div>
+</div>
+
+<div class="anonymous-tip-mask" id="anonymousTipMask">
+    <div class="anonymous-tip-box">
+        <h4>重要提醒</h4>
+        <p>本平台支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。</p>
+        <p>如需核实线索、反馈处理结果、申领奖励，您可自愿填写联系方式；举报人全部隐私信息由内控监察组严格保护，仅用于本次调查处置，不会向任何无关第三方泄露。</p>
+        <div class="anonymous-check">
+            <input type="checkbox" id="anonymousAgree">
+            <label for="anonymousAgree">我已了解以上事项，同意匿名举报</label>
+        </div>
+        <div class="anonymous-btn-row">
+            <button class="anonymous-btn-cancel" id="anonymousCancelBtn">关闭</button>
+            <button class="anonymous-btn-confirm" id="anonymousConfirmBtn" disabled>确认匿名</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// 提交后端：EdgeOne Pages 边缘函数（与企业微信群机器人对接）
+// 机器人 webhook key 通过 EdgeOne Pages 项目的环境变量 WECHAT_ROBOT_KEY 配置，不写在前端
+// 外部页部署在独立域名（如 lianjie.sanchushan.com），故使用绝对地址跨域提交；后端已开启 CORS
+const REPORT_API = "https://jubao.sanchushan.com/api/report";
+
+let currentChannel = "外部人员";
+let anonymousTipConfirmed = false;
+let selectedType = "";
+let isOtherType = false;
+
+const agree = document.getElementById('agree');
+const nextBtn = document.getElementById('nextBtn');
+agree.onchange = function(){
+    nextBtn.disabled = !this.checked;
+}
+nextBtn.onclick = function(){
+    document.getElementById('mask').style.display = 'none';
+    enterForm();
+}
+
+function enterForm(){
+    document.getElementById('formTitle').innerText = "外部举报平台";
+    document.getElementById('rewardOuter').style.display = 'block';
+    document.getElementById('formPage').style.display = 'block';
+    if(document.getElementById('anonymous').checked && !anonymousTipConfirmed){
+        showAnonymousTip();
+    }
+}
+
+document.getElementById('backBtn').onclick = function(){
+    if(confirm('确定要取消举报吗？已填写的内容将丢失')){
+        resetForm();
+        document.getElementById('formPage').style.display = 'none';
+        document.getElementById('mask').style.display = 'flex';
+    }
+}
+
+const anonymousRadio = document.getElementById('anonymous');
+const realnameRadio = document.getElementById('realname');
+const contactInput = document.getElementById('contact');
+const reporterNameInput = document.getElementById('reporterName');
+function setRealnameInputs(show){
+    reporterNameInput.style.display = show ? 'block' : 'none';
+    contactInput.style.display = show ? 'block' : 'none';
+}
+anonymousRadio.onchange = function(){
+    setRealnameInputs(false);
+    if(!anonymousTipConfirmed){
+        showAnonymousTip();
+    }
+}
+realnameRadio.onchange = function(){
+    setRealnameInputs(true);
+    anonymousTipConfirmed = false;
+}
+// 默认选中实名举报，并展示举报人姓名与联系方式输入框
+realnameRadio.checked = true;
+setRealnameInputs(true);
+
+function showAnonymousTip(){
+    document.getElementById('anonymousTipMask').style.display = 'flex';
+    document.getElementById('anonymousAgree').checked = false;
+    document.getElementById('anonymousConfirmBtn').disabled = true;
+}
+document.getElementById('anonymousAgree').onchange = function(){
+    document.getElementById('anonymousConfirmBtn').disabled = !this.checked;
+}
+document.getElementById('anonymousCancelBtn').onclick = function(){
+    document.getElementById('anonymousTipMask').style.display = 'none';
+    realnameRadio.checked = true;
+    contactInput.style.display = 'block';
+    anonymousTipConfirmed = false;
+}
+document.getElementById('anonymousConfirmBtn').onclick = function(){
+    anonymousTipConfirmed = true;
+    document.getElementById('anonymousTipMask').style.display = 'none';
+}
+
+// 被举报人列表：支持添加多个（姓名+门店/部门），图标按钮删除；第1个固定不可删除
+const accusedList = document.getElementById('accusedList');
+const TRASH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+function renderAccused(){
+    const boxes = accusedList.querySelectorAll('.accused-item');
+    boxes.forEach((box, i) => {
+        box.querySelector('.accused-tag').textContent = '被举报人' + (i + 1);
+        box.querySelector('.accused-del').style.visibility = i > 0 ? 'visible' : 'hidden';
+    });
+}
+function addAccusedBox(){
+    const div = document.createElement('div');
+    div.className = 'accused-item';
+    div.innerHTML = '<div class="accused-head"><span class="accused-tag"></span>'
+        + '<button type="button" class="accused-del" title="删除该被举报人">' + TRASH_SVG + '</button></div>'
+        + '<input type="text" class="required-input accused-name" placeholder="请填写被举报员工的姓名">'
+        + '<input type="text" class="required-input accused-dept" placeholder="请填写被举报员工所属门店或部门" style="margin-top:10px;">';
+    div.querySelector('.accused-del').onclick = function(){
+        div.remove();
+        renderAccused();
+    };
+    accusedList.appendChild(div);
+}
+document.getElementById('addAccusedBtn').onclick = function(){
+    addAccusedBox();
+    renderAccused();
+    const boxes = accusedList.querySelectorAll('.accused-item');
+    boxes[boxes.length - 1].querySelector('.accused-name').focus();
+};
+addAccusedBox();
+renderAccused();
+
+const typeText = document.getElementById('typeText');
+const typeVal = document.getElementById('typeVal');
+const otherTypeInput = document.getElementById('otherTypeInput');
+typeText.onclick = function(){
+    document.getElementById('outerTypePop').style.display = 'block';
+}
+
+const outerTypeItems = document.querySelectorAll('#outerTypePop .pop-item');
+outerTypeItems.forEach(item=>{
+    item.onclick = function(){
+        outerTypeItems.forEach(i=>i.classList.remove('active'));
+        this.classList.add('active');
+        selectedType = this.getAttribute('data-val');
+        isOtherType = selectedType === "其他舞弊行为";
+        otherTypeInput.placeholder = "请详细描述具体的舞弊行为";
+    }
+})
+
+document.getElementById('outerPopSure').onclick = function(){
+    if(!selectedType){alert("请选择举报类型");return;}
+    typeText.innerText = selectedType;
+    typeText.title = selectedType;
+    typeVal.value = selectedType;
+    document.getElementById('outerTypePop').style.display = 'none';
+    // 选中"其他"类举报类型后，关闭弹窗再展开第二个输入框（必填）
+    otherTypeInput.style.display = isOtherType ? 'block' : 'none';
+    document.getElementById('otherTypeHint').style.display = isOtherType ? 'block' : 'none';
+    if(isOtherType) otherTypeInput.focus();
+}
+document.getElementById('outerPopClose').onclick = function(){
+    document.getElementById('outerTypePop').style.display = 'none';
+}
+
+const contentInput = document.getElementById('content');
+const charNum = document.getElementById('charNum');
+contentInput.addEventListener('input', () => {
+    charNum.textContent = contentInput.value.length;
+});
+
+const fileInput = document.getElementById('file');
+const imgList = document.getElementById('imgList');
+let uploadedImages = [];
+fileInput.onchange = function(e){
+    const files = e.target.files;
+    if(files.length + uploadedImages.length > 5){
+        alert("最多只能上传5张图片");
+        return;
+    }
+    for(let i=0;i<files.length;i++){
+        const file = files[i];
+        if(file.size > 5*1024*1024){
+            alert("单张图片不能超过5MB");
+            continue;
+        }
+        const reader = new FileReader();
+        reader.onload = function(event){
+            const imgUrl = event.target.result;
+            const imgItem = document.createElement('div');
+            imgItem.className = 'img-item';
+            imgItem.innerHTML = `<img src="${imgUrl}"><div class="del-btn" data-index="${uploadedImages.length}">×</div>`;
+            imgList.appendChild(imgItem);
+            uploadedImages.push({url: imgUrl, file: file});
+        }
+        reader.readAsDataURL(file);
+    }
+}
+imgList.addEventListener('click', function(e){
+    if(e.target.classList.contains('del-btn')){
+        const index = parseInt(e.target.dataset.index);
+        uploadedImages.splice(index, 1);
+        e.target.parentElement.remove();
+        document.querySelectorAll('.del-btn').forEach((btn, i) => {
+            btn.dataset.index = i;
+        });
+    }
+})
+
+// 图片压缩：提交前将图片压缩后再上传，保证发送成功且体积小
+function compressImage(file, maxSize = 1280, quality = 0.7){
+    return new Promise((resolve) => {
+        if(!file || !file.type || file.type.indexOf('image/') !== 0){
+            resolve(file);
+            return;
+        }
+        let settled = false;
+        const fallback = () => { if(!settled){ settled = true; resolve(file); } };
+        const timer = setTimeout(fallback, 8000);
+        const reader = new FileReader();
+        reader.onerror = fallback;
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onerror = fallback;
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > height && width > maxSize) {
+                    height = Math.round(height * maxSize / width);
+                    width = maxSize;
+                } else if (height > maxSize) {
+                    width = Math.round(width * maxSize / height);
+                    height = maxSize;
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                try {
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                } catch(err){ clearTimeout(timer); fallback(); return; }
+                canvas.toBlob((blob) => {
+                    if(!blob){ clearTimeout(timer); fallback(); return; }
+                    const name = (file.name || 'image.jpg').replace(/\.\w+$/, '.jpg');
+                    clearTimeout(timer);
+                    settled = true;
+                    resolve(new File([blob], name, { type: 'image/jpeg' }));
+                }, 'image/jpeg', quality);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+document.getElementById('submitBtn').onclick = async function(){
+    if(document.getElementById('anonymous').checked && !anonymousTipConfirmed){
+        alert("请先确认匿名举报的重要提醒");
+        showAnonymousTip();
+        return;
+    }
+    const accusedBoxes = Array.from(document.querySelectorAll('#accusedList .accused-item'));
+    for(let i = 0; i < accusedBoxes.length; i++){
+        const n = accusedBoxes[i].querySelector('.accused-name').value.trim();
+        const d = accusedBoxes[i].querySelector('.accused-dept').value.trim();
+        if(!n){ alert("请填写被举报人" + (i+1) + "的姓名"); return; }
+        if(!d){ alert("请填写被举报人" + (i+1) + "所属门店/部门"); return; }
+    }
+    if(!typeVal.value){alert("请选择举报类型");return;}
+    if(isOtherType && !otherTypeInput.value.trim()){
+        alert("请填写具体的舞弊行为（必填）");
+        return;
+    }
+    const content = contentInput.value.trim();
+    if(!content){alert("请填写举报事由");return;}
+
+    if(realnameRadio.checked && !reporterNameInput.value.trim()){
+        alert("实名举报必须填写举报人姓名");
+        return;
+    }
+    if(realnameRadio.checked && !contactInput.value.trim()){
+        alert("实名举报必须填写联系方式（手机号/微信）");
+        return;
+    }
+
+    const reportMode = document.querySelector('input[name="reportMode"]:checked').value;
+    const contact = contactInput.value.trim() || "无（匿名）";
+    const reportNo = 'JB' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.floor(1000 + Math.random()*9000);
+
+    const btn = this;
+    btn.disabled = true;
+    btn.textContent = "提交中...";
+
+    try {
+        const compressed = uploadedImages.length
+            ? await Promise.all(uploadedImages.map(i => compressImage(i.file)))
+            : [];
+
+        const accusedText = accusedBoxes.map((box, i) => {
+            const n = box.querySelector('.accused-name').value.trim();
+            const d = box.querySelector('.accused-dept').value.trim();
+            return (i + 1) + '. ' + n + '（' + d + '）';
+        }).join('；');
+        const fields = {
+            '举报编号': reportNo,
+            '举报平台': currentChannel,
+            '举报方式': reportMode,
+            '举报人': realnameRadio.checked ? reporterNameInput.value.trim() : '匿名',
+            '联系方式': contact,
+            '被举报人': accusedText,
+            '举报类别': isOtherType ? `${selectedType}：${otherTypeInput.value.trim()}` : typeVal.value,
+            '举报事由': content,
+            '举报时间': new Date().toLocaleString()
+        };
+
+        const res = await postViaForm(fields, compressed);
+        if (res && res.fileDetails && res.fileDetails.some(d => d !== 'ok')) {
+          alert('举报已提交，但部分附件发送失败：\n' + res.fileDetails.join('\n'));
+        }
+
+        document.getElementById('reportNo').textContent = reportNo;
+        resetForm();
+        document.getElementById('formPage').style.display = 'none';
+        document.getElementById('successPage').style.display = 'block';
+    } catch(err){
+        alert(describeSubmitError(err));
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "提交举报";
+    }
+}
+
+// 用 fetch + FormData POST 到后端 API（跨域，后端已开启 CORS）
+// 由边缘函数负责把文本与图片附件转发到企业微信群机器人
+function postViaForm(fields, files){
+    return new Promise((resolve, reject) => {
+        const fd = new FormData();
+        for(const k in fields){
+            fd.append(k, fields[k]);
+        }
+        if(files && files.length){
+            files.forEach(f => fd.append('attachment', f, f.name || 'image.jpg'));
+        }
+        fetch(REPORT_API, {
+            method: 'POST',
+            body: fd
+        }).then(async (response) => {
+            const json = await response.json().catch(() => ({}));
+            if(response.ok && json.success){
+                resolve(json);
+            } else {
+                reject(new Error(json.message || 'submit failed'));
+            }
+        }).catch(err => reject(err));
+    });
+}
+
+function describeSubmitError(err){
+    const msg = (err && err.message) ? err.message : '';
+    if(/Failed to fetch|NetworkError|timeout/i.test(msg)){
+        return '网络异常，提交失败，请检查网络后重试。';
+    }
+    return '提交失败：' + (msg || '未知错误') + '，请稍后重试。若持续失败，请联系管理员确认企业微信机器人 key 是否已配置。';
+}
+
+function resetForm(){
+    realnameRadio.checked = true;
+    contactInput.style.display = 'block';
+    contactInput.value = '';
+    anonymousTipConfirmed = false;
+    reporterNameInput.value = '';
+    contactInput.value = '';
+    accusedList.innerHTML = '';
+    addAccusedBox();
+    renderAccused();
+    typeText.innerText = '请点击选择举报类型';
+    typeVal.value = '';
+    selectedType = "";
+    isOtherType = false;
+    otherTypeInput.style.display = 'none';
+    otherTypeInput.value = '';
+    document.getElementById('otherTypeHint').style.display = 'none';
+    contentInput.value = '';
+    charNum.textContent = '0';
+    imgList.innerHTML = '';
+    uploadedImages = [];
+    fileInput.value = '';
+    outerTypeItems.forEach(i=>i.classList.remove('active'));
+}
+</script>
+</body>
+</html>

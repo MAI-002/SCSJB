@@ -22,7 +22,23 @@ function buildMarkdown(fields) {
 function json(body, status) {
   return new Response(JSON.stringify(body), {
     status: status || 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
+}
+
+function corsPreflight() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
   });
 }
 
@@ -167,6 +183,10 @@ export async function onRequestPost({ request, env }) {
 
 // 非 POST 请求兜底
 export async function onRequest({ request, env }) {
+  if (request.method === 'OPTIONS') return corsPreflight();
   if (request.method === 'POST') return onRequestPost({ request, env });
-  return new Response('请使用 POST 提交举报', { status: 405 });
+  return new Response('请使用 POST 提交举报', {
+    status: 405,
+    headers: { 'Access-Control-Allow-Origin': '*' }
+  });
 }
