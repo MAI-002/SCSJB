@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>三出山违规投诉举报入口</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -345,19 +345,19 @@
 <div class="mask" id="mask">
     <div class="notice-box">
         <h3>举报须知</h3>
-        <p>为维护平台交易秩序，保障用户与三出山员工双方合法权益，平台开通违规行为监督举报通道。请您务必遵守以下规则：</p>
+        <p>内控监察组负责受理、管理、处理全集团投诉举报事项。为规范违规行为监督、防范经营风险，维护公司合法权益，同时保障员工正当权益，现开通违规行为监督举报平台，请您务必遵守以下规则：</p>
         <ul>
             <li>举报内容需真实、客观，严禁恶意诬告、虚假举报，违者将承担相应法律责任</li>
-            <li>平台将严格保护举报人隐私信息，不会向任何无关第三方泄露</li>
-            <li>本通道支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。</li>
-            <li>如需核实线索、反馈处理结果、领取奖励，请自愿填写联系方式，我们将严格保密，仅限内审调查使用。</li>
-            <li>请提供完整的举报事由及相关凭证，以便平台快速核实处理</li>
-            <li>举报核实后，符合条件的举报人可获得现金奖励（具体以平台审核结果为准）</li>
+            <li>公司鼓励实名举报，内控监察组将严格保护举报人隐私信息，不会向任何无关第三方泄露</li>
+            <li>本平台支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。</li>
+            <li>如需核实线索、反馈处理结果、领取奖励，请自愿填写联系方式，我们将严格保密，仅限内控监察组调查使用。</li>
+            <li>请提供完整的举报事由及相关凭证，以便内控监察组快速核实处理</li>
+            <li>举报核实后，符合条件的举报人可获得现金奖励（具体以审核结果为准）</li>
         </ul>
         <p>请仔细阅读以上规则，确认无误后勾选下方选项，进入举报页面。</p>
         <div class="check-box">
             <input type="checkbox" id="agree">
-            <label for="agree">我已了解以上事项，同意《举报须知》及<a href="privacy.html" target="_blank" class="privacy-link" onclick="event.stopPropagation()">《举报通道隐私保护指引》</a>并继续举报。</label>
+            <label for="agree">我已了解以上事项，同意《举报须知》及<a href="privacy.html" target="_blank" class="privacy-link" onclick="event.stopPropagation()">《举报平台隐私保护指引》</a>并继续举报。</label>
         </div>
         <button class="btn-confirm" id="nextBtn" disabled>确认举报</button>
     </div>
@@ -365,8 +365,8 @@
 
 <div class="pwd-mask" id="pwdMask">
     <div class="pwd-box">
-        <h3>内部通道验证</h3>
-        <p class="pwd-tip">请输入内部员工举报通道访问口令</p>
+        <h3>内部平台验证</h3>
+        <p class="pwd-tip">请输入内部员工举报平台访问口令</p>
         <input type="password" id="pwdInput" placeholder="请输入口令" autocomplete="off">
         <p class="pwd-err" id="pwdErr"></p>
         <button class="btn-confirm" id="pwdConfirm">确认进入</button>
@@ -549,8 +549,8 @@
 <div class="anonymous-tip-mask" id="anonymousTipMask">
     <div class="anonymous-tip-box">
         <h4>重要提醒</h4>
-        <p>本通道支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。</p>
-        <p>如需核实线索、反馈处理结果、领取奖励，请自愿填写联系方式，我们将严格保密，仅限内审调查使用。</p>
+        <p>本平台支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。</p>
+        <p>如需核实线索、反馈处理结果、领取奖励，请自愿填写联系方式，我们将严格保密，仅限内控监察组调查使用。</p>
         <div class="anonymous-check">
             <input type="checkbox" id="anonymousAgree">
             <label for="anonymousAgree">我已了解以上事项，同意匿名举报</label>
@@ -684,14 +684,14 @@ document.getElementById('anonymousConfirmBtn').onclick = function(){
     document.getElementById('anonymousTipMask').style.display = 'none';
 }
 
-// 被举报人列表：支持添加多个（姓名+门店/部门），图标按钮删除，至少保留一个
+// 被举报人列表：支持添加多个（姓名+门店/部门），图标按钮删除；第1个固定不可删除
 const accusedList = document.getElementById('accusedList');
 const TRASH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
 function renderAccused(){
     const boxes = accusedList.querySelectorAll('.accused-item');
     boxes.forEach((box, i) => {
         box.querySelector('.accused-tag').textContent = '被举报人' + (i + 1);
-        box.querySelector('.accused-del').style.visibility = boxes.length > 1 ? 'visible' : 'hidden';
+        box.querySelector('.accused-del').style.visibility = i > 0 ? 'visible' : 'hidden';
     });
 }
 function addAccusedBox(){
@@ -918,7 +918,7 @@ document.getElementById('submitBtn').onclick = async function(){
         }).join('；');
         const fields = {
             '举报编号': reportNo,
-            '举报通道': currentChannel,
+            '举报平台': currentChannel,
             '举报方式': reportMode,
             '举报人': realnameRadio.checked ? reporterNameInput.value.trim() : '匿名',
             '联系方式': contact,
