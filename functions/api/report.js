@@ -89,7 +89,7 @@ export async function onRequestPost({ request, env }) {
 
   // 内部通道身份校验：口令（__innerPwd）或企微自动识别（__code 换 userid）
   if (fields['举报通道'] === '内部员工') {
-    const INNER_AUTH_ENABLED = true;
+    const INNER_AUTH_ENABLED = false;
     const pwdOk = (fields['__innerPwd'] || '') === (env.INNER_REPORT_PASSWORD || 'JUBAO');
     const codeOk = !!fields['__code'];
     if (INNER_AUTH_ENABLED && !pwdOk && !codeOk) {

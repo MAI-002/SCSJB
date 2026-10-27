@@ -574,8 +574,7 @@ let selectedType = "";
 let isOtherType = false;
 let innerUnlocked = false;
 // 内部通道口令验证总开关：false=禁用验证（点内部通道直接进表单），true=启用口令校验
-// 后期如需启用自动识别身份（企微 OAuth），再改回 true 并配置后端即可
-let INNER_AUTH_ENABLED = true;
+let INNER_AUTH_ENABLED = false;
 
 const pwdMask = document.getElementById('pwdMask');
 const pwdInput = document.getElementById('pwdInput');
@@ -604,7 +603,7 @@ document.getElementById('innerBtn').onclick = function(){
 
 function enterInnerForm(){
     currentChannel = "内部员工";
-    document.getElementById('formTitle').innerText = "内部员工举报通道";
+    document.getElementById('formTitle').innerText = "内部员工举报平台";
     document.getElementById('accusedNameItem').style.display = 'block';
     document.getElementById('deptItem').style.display = 'block';
     document.getElementById('rewardInner').style.display = 'block';
