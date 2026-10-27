@@ -571,14 +571,18 @@ function getCookie(name){
     const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
     return m ? decodeURIComponent(m[1]) : '';
 }
+// 企微自建应用的 AgentId（应用详情页可见，纯数字），建议填写；留空则不携带该参数
+const QY_AGENTID = "";
 // 内部通道：企业微信网页授权（OAuth2）自动识别员工身份，免输口令
 function startInnerAuth(){
     const uid = getCookie('qy_userid');
     if(uid){ enterInnerForm(); return; }
     const redirect = encodeURIComponent('https://jubao.sanchushan.com/api/wecom/oauth');
-    const url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + QY_CORPID
+    let url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + QY_CORPID
         + '&redirect_uri=' + redirect
-        + '&response_type=code&scope=snsapi_base&state=inner#wechat_redirect';
+        + '&response_type=code&scope=snsapi_base&state=inner';
+    if(QY_AGENTID) url += '&agentid=' + QY_AGENTID;
+    url += '#wechat_redirect';
     location.href = url;
 }
 // 已通过企微授权（带 cookie）再次打开页面时，跳过须知直接进表单
