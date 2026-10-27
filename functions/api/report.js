@@ -5,8 +5,8 @@
 //   2) application/json（小程序方式，图片以 base64 放在 attachments 数组）
 // 环境变量：
 //   WECHAT_ROBOT_KEY：企业微信群机器人 webhook 地址中 key= 后面的那段
-//   QY_CORPID / QY_CORPSECRET：企业微信 corpId 与通讯录 secret（内部通道网页授权自动识别身份用，
-//                              由 /api/wecom/oauth 用 code 换取 userid 后写入 cookie）
+//   INNER_REPORT_PASSWORD：内部通道访问口令（网页版使用）；不配则默认 'JUBAO'
+//   QY_CORPID / QY_CORPSECRET：企微 OAuth（/api/wecom/oauth）自动识别身份时用，当前内部通道用口令校验、可不配
 
 function buildMarkdown(fields) {
   const lines = ['## 收到一条新举报'];
@@ -75,24 +75,30 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
+  // 内部通道口令校验（独立分支，无需机器人 key）：
+  // 前端输入口令后先调用本接口验证；提交举报时内部通道也必须带 __innerPwd，否则拒绝转发，防止绕过前端直接调用
+  if (fields['__action'] === 'verify') {
+    const ok = (fields['__pwd'] || '') === (env.INNER_REPORT_PASSWORD || 'JUBAO');
+    return json({ success: ok, message: ok ? '' : '口令错误' });
+  }
+
   const key = env.WECHAT_ROBOT_KEY;
   if (!key) {
     return json({ success: false, message: '服务器未配置企业微信机器人 key（WECHAT_ROBOT_KEY）' }, 500);
   }
 
-  // 内部通道：仅允许通过企业微信 OAuth 自动识别身份进入
-  // qy_userid / qy_name 由 /api/wecom/oauth 在企微网页授权后写入的 cookie 提供
+  // 内部通道身份校验：口令（__innerPwd）或企微自动识别（__code 换 userid）
   if (fields['举报通道'] === '内部员工') {
-    const cookie = request.headers.get('cookie') || '';
-    const um = cookie.match(/(?:^|;\s*)qy_userid=([^;]+)/);
-    const nm = cookie.match(/(?:^|;\s*)qy_name=([^;]+)/);
-    const qyUserid = um ? decodeURIComponent(um[1]) : '';
-    if (!qyUserid) {
-      return json({ success: false, message: '请通过企业微信进入内部通道' }, 403);
+    const INNER_AUTH_ENABLED = true;
+    const pwdOk = (fields['__innerPwd'] || '') === (env.INNER_REPORT_PASSWORD || 'JUBAO');
+    const codeOk = !!fields['__code'];
+    if (INNER_AUTH_ENABLED && !pwdOk && !codeOk) {
+      return json({ success: false, message: '内部通道校验失败，请重新进入通道' }, 403);
     }
-    fields['举报人企微ID'] = qyUserid;
-    if (nm) fields['举报人企微姓名'] = decodeURIComponent(nm[1]);
   }
+  // 内部标识字段仅用于鉴权，不进入群消息展示
+  delete fields['__code'];
+  delete fields['__innerPwd'];
 
   const sendUrl = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=' + key;
   const uploadBase = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=' + key + '&type=';
