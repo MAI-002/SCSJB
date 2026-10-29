@@ -271,11 +271,83 @@
         .accused-del svg{ width:17px; height:17px; }
         .add-accused{ width:100%; height:44px; border:1px dashed var(--primary-green); background:#fff; color:var(--primary-green); border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; transition:.2s; }
         .add-accused:hover{ background:var(--primary-light); }
+
+        /* 开场弹窗：举报有奖 */
+        .welcome-mask{
+            position:fixed;inset:0;z-index:300;
+            background:rgba(31,42,26,0.55);
+            backdrop-filter:blur(3px);
+            display:flex;align-items:center;justify-content:center;
+            padding:24px;
+            animation:welcomeFade .3s ease;
+        }
+        .welcome-pop{
+            position:relative;width:100%;max-width:340px;
+            background:#fff;border-radius:26px;
+            padding:36px 26px 28px;text-align:center;
+            box-shadow:0 24px 60px rgba(54,92,31,0.35);
+            overflow:hidden;
+            animation:welcomePop .5s cubic-bezier(.18,.89,.32,1.28);
+        }
+        .welcome-pop::before{
+            content:"";position:absolute;top:0;left:0;right:0;height:6px;
+            background:linear-gradient(90deg,#ffb02e,#4a7a2b,#36c98d);
+        }
+        .welcome-close{
+            position:absolute;top:12px;right:14px;
+            width:30px;height:30px;border:none;background:transparent;
+            font-size:24px;line-height:30px;color:#b6bdab;cursor:pointer;
+            border-radius:50%;transition:.2s;z-index:2;
+        }
+        .welcome-close:hover{background:#f3f5ef;color:#365c1f;}
+        .welcome-burst{font-size:46px;animation:welcomeFloat 2.2s ease-in-out infinite;margin-bottom:4px;}
+        .welcome-title{font-size:36px;font-weight:800;letter-spacing:2px;margin-bottom:6px;color:#365c1f;}
+        .welcome-title span{display:inline-block;animation:welcomeLetter .5s backwards;}
+        .welcome-title span:nth-child(1){animation-delay:.05s;}
+        .welcome-title span:nth-child(2){animation-delay:.16s;}
+        .welcome-title span:nth-child(3){animation-delay:.27s;}
+        .welcome-title span:nth-child(4){animation-delay:.38s;}
+        .welcome-title span:nth-child(5){animation-delay:.49s;color:#e8821e;}
+        .welcome-sub{font-size:11.5px;letter-spacing:4px;color:#9aa68a;margin-bottom:20px;font-weight:700;}
+        .welcome-line{font-size:15px;color:#3a4233;line-height:1.95;opacity:0;animation:welcomeUp .5s forwards;}
+        .welcome-line:nth-of-type(1){animation-delay:.58s;}
+        .welcome-line:nth-of-type(2){animation-delay:.74s;}
+        .welcome-line:nth-of-type(3){animation-delay:.90s;}
+        .welcome-line:nth-of-type(4){animation-delay:1.06s;}
+        .welcome-line b{color:#e8821e;font-size:19px;}
+        .welcome-tip{font-size:12.5px;color:#8a927f;margin-top:2px;}
+        .welcome-go{
+            margin-top:22px;width:100%;height:50px;border:none;border-radius:14px;
+            background:linear-gradient(135deg,#ffb02e,#e8821e);
+            color:#fff;font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer;
+            box-shadow:0 8px 18px rgba(232,130,30,0.35);
+            opacity:0;animation:welcomeUp .5s forwards;animation-delay:1.22s;transition:.2s;
+        }
+        .welcome-go:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(232,130,30,0.45);}
+        @keyframes welcomeFade{from{opacity:0}to{opacity:1}}
+        @keyframes welcomePop{from{opacity:0;transform:translateY(26px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @keyframes welcomeFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-9px) rotate(4deg)}}
+        @keyframes welcomeLetter{from{opacity:0;transform:translateY(16px) scale(.5)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @keyframes welcomeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
     </style>
 </head>
 <body>
 
-<div class="mask" id="mask">
+<div class="welcome-mask" id="welcomeMask">
+    <div class="welcome-pop">
+        <button class="welcome-close" id="welcomeClose" aria-label="关闭">×</button>
+        <div class="welcome-burst">🎉</div>
+        <div class="welcome-title"><span>举</span><span>报</span><span>有</span><span>奖</span><span>！</span></div>
+        <div class="welcome-sub">REPORT &amp; WIN</div>
+        <p class="welcome-line">发现违规？别沉默！</p>
+        <p class="welcome-line">动动手指，线索变现金 💰</p>
+        <p class="welcome-line">最高 <b>10000元</b> 奖励等你拿</p>
+        <p class="welcome-line welcome-tip">实名保密 · 匿名也行 · 内控监察组护航</p>
+        <button class="welcome-go" id="welcomeGo">马上举报 →</button>
+    </div>
+</div>
+
+<div class="mask" id="mask" style="display:none;">
     <div class="notice-box">
         <h3>举报须知</h3>
         <p style="text-indent:2em;">武汉三出山品牌管理有限公司内控监察组负责受理、管理、处理本公司及其关联主体的违规行为举报事项。为规范经营监督、防范经营风险，维护公司合法权益，同时保障举报人合法权益，现开通违规行为监督举报平台，请您务必遵守以下规则：</p>
@@ -441,6 +513,18 @@ let currentChannel = "外部人员";
 let anonymousTipConfirmed = false;
 let selectedType = "";
 let isOtherType = false;
+
+// 开场弹窗：关闭后展示举报须知
+const welcomeMask = document.getElementById('welcomeMask');
+function closeWelcome(){
+    welcomeMask.style.display = 'none';
+    document.getElementById('mask').style.display = 'flex';
+}
+document.getElementById('welcomeClose').onclick = closeWelcome;
+document.getElementById('welcomeGo').onclick = closeWelcome;
+welcomeMask.addEventListener('click', function(e){
+    if(e.target === welcomeMask) closeWelcome();
+});
 
 const agree = document.getElementById('agree');
 const nextBtn = document.getElementById('nextBtn');
