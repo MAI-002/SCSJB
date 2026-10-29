@@ -338,11 +338,127 @@
         .accused-del svg{ width:17px; height:17px; }
         .add-accused{ width:100%; height:44px; border:1px dashed var(--primary-green); background:#fff; color:var(--primary-green); border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; transition:.2s; }
         .add-accused:hover{ background:var(--primary-light); }
+
+        /* 开场弹窗：举报有奖（与外部页一致） */
+        .welcome-mask{
+            position:fixed;inset:0;z-index:300;
+            background:rgba(31,42,26,0.55);
+            backdrop-filter:blur(3px);
+            display:flex;align-items:center;justify-content:center;
+            padding:24px;
+            animation:welcomeFade .3s ease;
+        }
+        .welcome-pop{
+            position:relative;width:100%;max-width:340px;
+            background:#fff;border-radius:26px;
+            padding:36px 26px 28px;text-align:center;
+            box-shadow:0 24px 60px rgba(54,92,31,0.35);
+            overflow:hidden;
+            animation:welcomePop .5s cubic-bezier(.18,.89,.32,1.28);
+        }
+        .welcome-pop::before{
+            content:"";position:absolute;top:0;left:0;right:0;height:6px;
+            background:linear-gradient(90deg,#9bd45a,#4a7a2b,#2f7d5b);
+        }
+        .welcome-close{
+            position:absolute;top:12px;right:14px;
+            width:30px;height:30px;border:none;background:transparent;
+            font-size:24px;line-height:30px;color:#b6bdab;cursor:pointer;
+            border-radius:50%;transition:.2s;z-index:2;
+        }
+        .welcome-close:hover{background:#f3f5ef;color:#365c1f;}
+        .welcome-logo{
+            width:86px;height:86px;margin:0 auto 12px;position:relative;
+            animation:logoIn .7s cubic-bezier(.2,.85,.3,1.15) backwards;
+        }
+        .welcome-logo svg{width:100%;height:100%;display:block;border-radius:50%;
+            box-shadow:0 8px 20px rgba(31,42,26,.28);}
+        .welcome-logo img{width:100%;height:100%;display:none;border-radius:50%;
+            box-shadow:0 8px 20px rgba(31,42,26,.28);object-fit:cover;}
+        .welcome-logo::after{
+            content:"";position:absolute;inset:-7px;border-radius:50%;
+            background:conic-gradient(from 0deg,transparent 0 72%,rgba(74,122,43,.85) 86%,transparent 100%);
+            -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+            mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+            animation:ringSpin 3.2s linear infinite;
+        }
+        .welcome-logo::before{
+            content:"";position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;
+            background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.5) 48%,transparent 62%);
+            background-size:250% 250%;
+            animation:logoShine 3s ease-in-out 1.2s infinite;
+        }
+        .welcome-title{font-size:36px;font-weight:800;letter-spacing:2px;text-indent:1px;margin-bottom:6px;
+            background:linear-gradient(90deg,#5aa832,#365c1f,#7cc242);
+            -webkit-background-clip:text;background-clip:text;
+            -webkit-text-fill-color:transparent;color:transparent;}
+        .welcome-title span{display:inline-block;animation:welcomeLetter .5s backwards;}
+        .welcome-title span:nth-child(1){animation-delay:.05s;}
+        .welcome-title span:nth-child(2){animation-delay:.16s;}
+        .welcome-title span:nth-child(3){animation-delay:.27s;}
+        .welcome-title span:nth-child(4){animation-delay:.38s;}
+        .welcome-title span:nth-child(5){animation-delay:.49s;margin-right:-.5em;}
+        .welcome-sub{font-size:11.5px;letter-spacing:4px;text-indent:2px;color:#9aa68a;margin-bottom:20px;font-weight:700;}
+        .welcome-line{font-size:15px;color:#3a4233;line-height:1.95;opacity:0;animation:welcomeUp .5s forwards;}
+        .welcome-line:nth-of-type(1){animation-delay:.58s;}
+        .welcome-line:nth-of-type(2){animation-delay:.74s;}
+        .welcome-line:nth-of-type(3){animation-delay:.90s;}
+        .welcome-line:nth-of-type(4){animation-delay:1.06s;}
+        .welcome-line b{color:#4a7a2b;font-size:19px;}
+        .welcome-tip{font-size:12.5px;color:#8a927f;margin-top:2px;}
+        .welcome-go{
+            margin-top:22px;width:100%;height:50px;border:none;border-radius:14px;
+            color:#fff;font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer;
+            background:linear-gradient(90deg,#365c1f 0%,#6fae3e 12.5%,#9bd45a 25%,#6fae3e 37.5%,#365c1f 50%,#6fae3e 62.5%,#9bd45a 75%,#6fae3e 87.5%,#365c1f 100%);
+            background-size:200% 100%;
+            box-shadow:0 8px 18px rgba(74,122,43,0.35);
+            opacity:0;
+            animation:welcomeUp .5s forwards,flowBg 2.8s linear infinite;
+            animation-delay:1.22s,0s;
+            transition:transform .2s,box-shadow .2s;
+        }
+        .welcome-go:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(74,122,43,0.45);}
+        @keyframes welcomeFade{from{opacity:0}to{opacity:1}}
+        @keyframes welcomePop{from{opacity:0;transform:translateY(26px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @keyframes logoIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+        @keyframes ringSpin{to{transform:rotate(360deg)}}
+        @keyframes logoShine{0%{background-position:130% 0}60%,100%{background-position:-130% 0}}
+        @keyframes welcomeLetter{from{opacity:0;transform:translateY(16px) scale(.5)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @keyframes welcomeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes flowBg{from{background-position:0% 50%}to{background-position:-100% 50%}}
     </style>
 </head>
 <body>
 
-<div class="mask" id="mask">
+<div class="welcome-mask" id="welcomeMask">
+    <div class="welcome-pop">
+        <button class="welcome-close" id="welcomeClose" aria-label="关闭">×</button>
+        <div class="welcome-logo">
+            <img src="external/logo.png" alt="三出山品牌标志" id="logoImg2">
+            <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三出山品牌标志">
+                <circle cx="60" cy="60" r="60" fill="#6d775c"/>
+                <path d="M60 20 C70 24 82 26 92 27 V68 C92 84 78 94 60 100 C42 94 28 84 28 68 V27 C38 26 50 24 60 20 Z"
+                      fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+                <g fill="#fff">
+                    <rect x="42" y="45" width="36" height="9"/>
+                    <rect x="42" y="36" width="8" height="12"/>
+                    <rect x="56" y="31" width="8" height="17"/>
+                    <rect x="70" y="36" width="8" height="12"/>
+                </g>
+                <text x="60" y="76" text-anchor="middle" font-size="14" font-weight="700" letter-spacing="1"
+                      fill="#fff" font-family="'PingFang SC','Microsoft YaHei',sans-serif">三出山</text>
+            </svg>
+        </div>
+        <div class="welcome-title"><span>举</span><span>报</span><span>有</span><span>奖</span><span>！</span></div>
+        <p class="welcome-line">发现违规？别沉默！</p>
+        <p class="welcome-line">提交有效线索，查实可获奖励</p>
+        <p class="welcome-line">最高 <b>10000 元</b> 奖励等你拿</p>
+        <p class="welcome-line welcome-tip">风清气正，廉洁从业，内控监察组全力护航</p>
+        <button class="welcome-go" id="welcomeGo">马上举报 →</button>
+    </div>
+</div>
+
+<div class="mask" id="mask" style="display:none;">
     <div class="notice-box">
         <h3>举报须知</h3>
         <p style="text-indent:2em;">内控监察组负责受理、管理、处理全集团投诉举报事项。为规范违规行为监督、防范经营风险，维护公司合法权益，同时保障员工正当权益，现开通违规行为监督举报平台，请您务必遵守以下规则：</p>
@@ -587,6 +703,29 @@ nextBtn.onclick = function(){
     document.getElementById('mask').style.display = 'none';
     enterInnerForm();
 }
+
+// 开场弹窗：关闭后展示举报须知
+const welcomeMask = document.getElementById('welcomeMask');
+function closeWelcome(){
+    welcomeMask.style.display = 'none';
+    document.getElementById('mask').style.display = 'flex';
+}
+document.getElementById('welcomeClose').onclick = closeWelcome;
+document.getElementById('welcomeGo').onclick = closeWelcome;
+welcomeMask.addEventListener('click', function(e){
+    if(e.target === welcomeMask) closeWelcome();
+});
+
+// 品牌logo：优先使用原图 external/logo.png，加载成功后替换SVG临摹版
+(function(){
+    const img = document.getElementById('logoImg2');
+    img.onload = function(){
+        this.style.display = 'block';
+        const svg = document.querySelector('.welcome-logo svg');
+        if(svg) svg.remove();
+    };
+    img.src = 'external/logo.png';
+})();
 
 function enterInnerForm(){
     currentChannel = "内部员工";
