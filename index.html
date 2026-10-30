@@ -371,7 +371,7 @@
             width:86px;height:86px;margin:0 auto 12px;position:relative;
             animation:logoIn .7s cubic-bezier(.2,.85,.3,1.15) backwards;
         }
-        .welcome-logo svg{width:100%;height:100%;display:block;border-radius:50%;
+        .welcome-logo svg{width:100%;height:100%;display:none;border-radius:50%;
             box-shadow:0 8px 20px rgba(31,42,26,.28);}
         .welcome-logo img{width:100%;height:100%;display:none;border-radius:50%;
             box-shadow:0 8px 20px rgba(31,42,26,.28);object-fit:cover;}
@@ -728,15 +728,23 @@ welcomeMask.addEventListener('click', function(e){
     if(e.target === welcomeMask) closeWelcome();
 });
 
-// 品牌logo：优先使用原图 external/logo.png，加载成功后替换SVG临摹版
+// 品牌logo：默认隐藏，原图加载成功才显示；仅加载失败时才显示SVG兜底
 (function(){
     const img = document.getElementById('logoImg2');
-    img.onload = function(){
-        this.style.display = 'block';
-        const svg = document.querySelector('.welcome-logo svg');
+    const svg = document.querySelector('.welcome-logo svg');
+    function showImg(){
+        img.style.display = 'block';
         if(svg) svg.remove();
-    };
-    img.src = 'external/logo.png';
+    }
+    function showSvg(){
+        if(img.parentNode) img.remove();
+        if(svg) svg.style.display = 'block';
+    }
+    img.onload = showImg;
+    img.onerror = showSvg;
+    if(img.complete){
+        if(img.naturalWidth > 0){ showImg(); } else { showSvg(); }
+    }
 })();
 
 function enterInnerForm(){
