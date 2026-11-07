@@ -209,9 +209,9 @@
         .anonymous-check input{width:18px;height:18px;margin-right:8px;accent-color:var(--primary-green);}
         .anonymous-check span{font-size:13.5px;color:var(--text-main);}
         .anonymous-btn-row{display:flex;gap:12px;}
-        .anonymous-btn-cancel{flex:1;height:42px;border:1px solid var(--border);background:#fff;border-radius:12px;font-size:14px;color:var(--text-main);cursor:pointer;transition:.2s;font-weight:500;}
+        .anonymous-btn-cancel{flex:1;height:42px;border:1px solid var(--border);background:#fff;border-radius:12px;font-size:14px;color:var(--text-main);cursor:pointer;transition:.2s;font-weight:500;white-space:nowrap;}
         .anonymous-btn-cancel:hover{background:#f3f5ef;}
-        .anonymous-btn-confirm{flex:1;height:42px;background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:.25s;}
+        .anonymous-btn-confirm{flex:1.4;height:42px;background:linear-gradient(135deg,var(--primary-green),var(--primary-dark));color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;transition:.25s;white-space:nowrap;}
         .anonymous-btn-confirm:disabled{background:#cdd3c4;cursor:not-allowed;}
 
         .reward-info{
@@ -539,15 +539,15 @@
 <div class="anonymous-tip-mask" id="anonymousTipMask">
     <div class="anonymous-tip-box">
         <h4>重要提醒</h4>
-        <p>本平台支持匿名举报，无需填写个人信息，提交后我们无法与您联系，视为自动放弃举报奖励。</p>
-        <p>如需核实线索、反馈处理结果、申领奖励，您可自愿填写联系方式；举报人全部隐私信息由内控监察组严格保护，仅用于本次调查处置，不会向任何无关第三方泄露。</p>
+        <p>本平台支持匿名举报，匿名提交无需填写个人及联系信息，提交后我们无法与您取得联系，<strong>视为自愿放弃奖励申领、进度跟进、异议沟通权利</strong>。</p>
+        <p>如需核实线索、反馈处理结果、申领奖励或提出异议，请选择实名方式提交；举报人全部隐私信息由内控监察组严格保护，仅用于本次调查处置，不会向任何无关第三方泄露。</p>
         <div class="anonymous-check">
             <input type="checkbox" id="anonymousAgree">
             <label for="anonymousAgree">我已了解以上事项，同意匿名举报</label>
         </div>
         <div class="anonymous-btn-row">
             <button class="anonymous-btn-cancel" id="anonymousCancelBtn">关闭</button>
-            <button class="anonymous-btn-confirm" id="anonymousConfirmBtn" disabled>确认匿名</button>
+            <button class="anonymous-btn-confirm" id="anonymousConfirmBtn" disabled>确认匿名 放弃奖金</button>
         </div>
     </div>
 </div>
